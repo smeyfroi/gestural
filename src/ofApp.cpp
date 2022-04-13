@@ -22,10 +22,14 @@ void ofApp::update(){
     resizedFrame2.scaleIntoMe(frame2, CV_INTER_AREA);
     simpleFrame2 = resizedFrame2;
   }
+  
+  if (frame1.bAllocated && frame2.bAllocated) {
+    frameDiff.absDiff(simpleFrame1, simpleFrame2);
+  }
 }
 
 //--------------------------------------------------------------
-void drawImage(ofxCvImage& image) {
+void drawImage(const ofxCvImage& image) {
   if (image.bAllocated) {
     ofSetColor(ofColor::white);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
@@ -34,7 +38,8 @@ void drawImage(ofxCvImage& image) {
 
 void ofApp::draw(){
   ofBackground(ofColor::white);
-  drawImage(simpleFrame1);
+  drawImage(frameDiff);
+//  drawImage(simpleFrame1);
 }
 
 //--------------------------------------------------------------

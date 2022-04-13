@@ -26,5 +26,5 @@ private:
   ofVideoGrabber video;
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
-//  ofxCvFloatImage frameFlowX, frameFlowY;
+  ofxCvGrayscaleImage frameDiff;
 };
