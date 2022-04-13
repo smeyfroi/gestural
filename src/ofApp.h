@@ -24,7 +24,7 @@ class ofApp : public ofBaseApp{
 		
 private:
   ofVideoGrabber video;
-  ofxCvColorImage frame;
-//  ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
+  ofxCvColorImage frame1, frame2;
+  ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
 //  ofxCvFloatImage frameFlowX, frameFlowY;
 };

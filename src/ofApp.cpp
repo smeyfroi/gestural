@@ -2,25 +2,39 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  video.initGrabber(ofGetWindowWidth(), ofGetWindowHeight());
+  ofSetFrameRate(60);
+  video.initGrabber(640, 480);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   video.update();
   if (video.isFrameNew()) {
-    frame.setFromPixels(video.getPixels());
-    frame.mirror(false, true);
+    if (frame2.bAllocated) {
+      frame1 = frame2;
+      simpleFrame1 = simpleFrame2;
+    }
+    frame2.setFromPixels(video.getPixels());
+    frame2.mirror(false, true);
+    ofxCvColorImage resizedFrame2;
+//    resizedFrame2.allocate(frame2.width*0.3, frame2.height*0.3);
+    resizedFrame2.allocate(frame2.width, frame2.height);
+    resizedFrame2.scaleIntoMe(frame2, CV_INTER_AREA);
+    simpleFrame2 = resizedFrame2;
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-  ofBackground(255);
-  if (frame.bAllocated) {
-    ofSetColor(255);
-    frame.draw(0, 0);
+void drawImage(ofxCvImage& image) {
+  if (image.bAllocated) {
+    ofSetColor(ofColor::white);
+    image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   }
+}
+
+void ofApp::draw(){
+  ofBackground(ofColor::white);
+  drawImage(simpleFrame1);
 }
 
 //--------------------------------------------------------------
