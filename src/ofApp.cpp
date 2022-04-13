@@ -7,6 +7,8 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
+bool particleIsDead(const Particle& particle) { return particle.isDead(); }
+
 void ofApp::update(){
   video.update();
   if (video.isFrameNew()) {
@@ -25,13 +27,32 @@ void ofApp::update(){
   
   if (frame1.bAllocated && frame2.bAllocated) {
     frameDiff.absDiff(simpleFrame1, simpleFrame2);
+    frameDiff.threshold(64);
   }
+  
+  if (frameDiff.bAllocated) {
+    const auto& pixels = frameDiff.getPixels();
+    const float scale = float(pixels.getWidth()) / float(ofGetWindowWidth());
+    for (int i=0; i<1000; ++i) {
+      size_t x = ofRandom(pixels.getWidth());
+      size_t y = ofRandom(pixels.getHeight());
+      if (pixels.getColor(x, y).getBrightness() > 128) {
+        particles.push_back(Particle(x/scale, y/scale));
+      };
+    }
+  }
+  
+  for (auto& particle : particles) {
+    particle.update();
+  }
+  
+  std::remove_if(particles.begin(), particles.end(), particleIsDead);
 }
 
 //--------------------------------------------------------------
 void drawImage(const ofxCvImage& image) {
   if (image.bAllocated) {
-    ofSetColor(ofColor::white);
+    ofSetColor(255, 255, 255, 128);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   }
 }
@@ -40,6 +61,9 @@ void ofApp::draw(){
   ofBackground(ofColor::white);
   drawImage(frameDiff);
 //  drawImage(simpleFrame1);
+  for (auto& particle : particles) {
+    particle.draw();
+  }
 }
 
 //--------------------------------------------------------------
