@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "particle.hpp"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -7,8 +8,6 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-bool particleIsDead(const Particle& particle) { return particle.isDead(); }
-
 void ofApp::update(){
   video.update();
   if (video.isFrameNew()) {
@@ -37,16 +36,12 @@ void ofApp::update(){
       size_t x = ofRandom(pixels.getWidth());
       size_t y = ofRandom(pixels.getHeight());
       if (pixels.getColor(x, y).getBrightness() > 128) {
-        particles.push_back(Particle(x/scale, y/scale));
+        Particle::makeParticle(x/scale, y/scale);
       };
     }
   }
   
-  for (auto& particle : particles) {
-    particle.update();
-  }
-  
-  std::remove_if(particles.begin(), particles.end(), particleIsDead);
+  Particle::updateParticles();
 }
 
 //--------------------------------------------------------------
@@ -61,9 +56,7 @@ void ofApp::draw(){
   ofBackground(ofColor::white);
   drawImage(frameDiff);
 //  drawImage(simpleFrame1);
-  for (auto& particle : particles) {
-    particle.draw();
-  }
+  Particle::drawParticles();
 }
 
 //--------------------------------------------------------------

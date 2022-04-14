@@ -2,8 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxOpenCv.h"
-#include <vector>
-#include "particle.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -29,5 +27,4 @@ private:
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
   ofxCvGrayscaleImage frameDiff;
-  std::vector<Particle> particles;
 };
