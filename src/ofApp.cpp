@@ -1,6 +1,8 @@
 #include "ofApp.h"
 #include "particle.hpp"
 
+const int MAX_NEW_PARTICLES = 500;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
   ofSetFrameRate(60);
@@ -32,7 +34,7 @@ void ofApp::update(){
   if (frameDiff.bAllocated) {
     const auto& pixels = frameDiff.getPixels();
     const float scale = float(pixels.getWidth()) / float(ofGetWindowWidth());
-    for (int i=0; i<1000; ++i) {
+    for (int i=0; i<MAX_NEW_PARTICLES; ++i) {
       size_t x = ofRandom(pixels.getWidth());
       size_t y = ofRandom(pixels.getHeight());
       if (pixels.getColor(x, y).getBrightness() > 128) {

@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include <vector>
 #include <memory.h>
+#include "ofxSpatialHash.h"
 
 class Particle {
 public:
@@ -16,7 +17,10 @@ public:
   
 private:
   static std::vector<Particle> particles;
+  static std::vector<ofVec2f> points;
+  static unique_ptr<ofx::KDTree<ofVec2f>> spatialIndexPtr;
   ofVec2f position;
   ofVec2f velocity;
   float radius;
+  int age;
 };
