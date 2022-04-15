@@ -1,12 +1,19 @@
 #include "ofApp.h"
 #include "particle.hpp"
 
-const int MAX_NEW_PARTICLES = 500;
+const int MAX_NEW_PARTICLES = 200;
+const size_t canvasWidth = 72*37;
+const size_t canvasHeight = 72*25;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
   ofSetFrameRate(60);
   video.initGrabber(640, 480);
+  // init drawing surface
+  fbo.allocate(canvasWidth, canvasHeight, GL_RGB);
+  fbo.begin();
+  ofBackground(ofColor::white);
+  fbo.end();
 }
 
 //--------------------------------------------------------------
@@ -29,11 +36,13 @@ void ofApp::update(){
   if (frame1.bAllocated && frame2.bAllocated) {
     frameDiff.absDiff(simpleFrame1, simpleFrame2);
     frameDiff.threshold(64);
+    frameDiff.blur();
+    frameDiff.erode_3x3();
   }
   
   if (frameDiff.bAllocated) {
     const auto& pixels = frameDiff.getPixels();
-    const float scale = float(pixels.getWidth()) / float(ofGetWindowWidth());
+    const float scale = float(pixels.getWidth()) / float(canvasWidth);
     for (int i=0; i<MAX_NEW_PARTICLES; ++i) {
       size_t x = ofRandom(pixels.getWidth());
       size_t y = ofRandom(pixels.getHeight());
@@ -44,21 +53,38 @@ void ofApp::update(){
   }
   
   Particle::updateParticles();
+  
+  fbo.begin();
+  ofEnableAlphaBlending();
+  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+  Particle::drawParticles();
+  fbo.end();
 }
 
 //--------------------------------------------------------------
 void drawImage(const ofxCvImage& image) {
   if (image.bAllocated) {
-    ofSetColor(255, 255, 255, 128);
+    ofSetColor(255, 255, 255, 64);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   }
 }
 
 void ofApp::draw(){
-  ofBackground(ofColor::white);
-  drawImage(frameDiff);
-//  drawImage(simpleFrame1);
-  Particle::drawParticles();
+//  ofBackground(ofColor::white);
+//  drawImage(frameDiff);
+  
+  ofSetColor(ofColor::white);
+  ofDisableBlendMode();
+  fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+  
+  ofEnableAlphaBlending();
+//  drawImage(frameDiff);
+  drawImage(simpleFrame1);
+//  Particle::drawParticles();
+  
+  ofSetColor(ofColor::black);
+  ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+  ofDrawBitmapString(Particle::particleCount(), 20, 40);
 }
 
 //--------------------------------------------------------------

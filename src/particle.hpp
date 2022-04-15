@@ -10,6 +10,7 @@ public:
   static void makeParticle(float x, float y);
   static void drawParticles();
   static void updateParticles();
+  static size_t particleCount();
   Particle(float x, float y);
   void update();
   bool isDead() const;

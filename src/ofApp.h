@@ -27,4 +27,5 @@ private:
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
   ofxCvGrayscaleImage frameDiff;
+  ofFbo fbo;
 };

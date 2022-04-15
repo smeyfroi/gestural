@@ -1,6 +1,8 @@
 #include "particle.hpp"
 
-const int MAX_AGE = 400;
+const int MAX_AGE = 300;
+extern const size_t canvasWidth = 72*37;
+extern const size_t canvasHeight = 72*25;
 
 std::vector<Particle> Particle::particles;
 std::vector<ofVec2f> Particle::points;
@@ -35,10 +37,14 @@ void Particle::updateParticles() {
   Particle::spatialIndexPtr = make_unique<ofx::KDTree<ofVec2f>>(points);
 }
 
+size_t Particle::particleCount() {
+  return particles.size();
+}
+
 Particle::Particle(float x, float y) :
 position(x, y),
 velocity(1, 0),
-radius(20.0),
+radius(15.0),
 age(0)
 {
   velocity.rotate(ofRandom(360.0));
@@ -50,7 +56,7 @@ void Particle::update() {
 }
 
 bool Particle::isDead() const {
-  return (age > MAX_AGE || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > ofGetWindowWidth() || position.y-radius > ofGetWindowHeight());
+  return (age > MAX_AGE || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > canvasWidth || position.y-radius > canvasHeight);
 }
 
 void Particle::draw() const {
@@ -64,12 +70,8 @@ void Particle::draw() const {
   for (const auto& searchResult: searchResults) {
     size_t i = searchResult.first;
     float distanceSquared = searchResult.second;
-    ofSetColor(0, 0, 0, 1/distanceSquared*100000);
+    ofSetColor(0, 0, 0, 1/distanceSquared*5000);
     ofDrawLine(position, particles[i].position);
   }
   ofPopView();
-  
-  ofSetColor(ofColor::black);
-  ofDrawBitmapString(ofGetFrameRate(), 20, 20);
-  ofDrawBitmapString(particles.size(), 20, 40);
 }
