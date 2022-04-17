@@ -37,7 +37,7 @@ void ofApp::update(){
     frameDiff.absDiff(simpleFrame1, simpleFrame2);
     frameDiff.threshold(64);
     frameDiff.blur();
-    frameDiff.erode_3x3();
+//    frameDiff.erode_3x3();
   }
   
   if (frameDiff.bAllocated) {

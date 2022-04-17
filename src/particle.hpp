@@ -22,6 +22,7 @@ private:
   static unique_ptr<ofx::KDTree<ofVec2f>> spatialIndexPtr;
   ofVec2f position;
   ofVec2f velocity;
+  ofVec2f acceleration;
   float radius;
   int age;
 };
