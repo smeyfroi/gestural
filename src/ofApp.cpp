@@ -4,11 +4,18 @@
 const int MAX_NEW_PARTICLES = 200;
 const size_t canvasWidth = 72*37;
 const size_t canvasHeight = 72*25;
+const size_t resizedVideoWidth = 640;
+const size_t resizedVideoHeight = 480;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
   ofSetFrameRate(60);
+#ifdef USE_CAMERA
   video.initGrabber(640, 480);
+#else
+  video.load("subject.mp4");
+  video.play();
+#endif
   // init drawing surface
   fbo.allocate(canvasWidth, canvasHeight, GL_RGB);
   fbo.begin();
@@ -25,10 +32,14 @@ void ofApp::update(){
       simpleFrame1 = simpleFrame2;
     }
     frame2.setFromPixels(video.getPixels());
+#ifdef USE_CAMERA
     frame2.mirror(false, true);
+#else
+    frame2.mirror(false, false);
+#endif
     ofxCvColorImage resizedFrame2;
-//    resizedFrame2.allocate(frame2.width*0.3, frame2.height*0.3);
-    resizedFrame2.allocate(frame2.width, frame2.height);
+    resizedFrame2.allocate(resizedVideoWidth, resizedVideoHeight);
+//    resizedFrame2.allocate(frame2.width, frame2.height);
     resizedFrame2.scaleIntoMe(frame2, CV_INTER_AREA);
     simpleFrame2 = resizedFrame2;
   }
@@ -37,7 +48,7 @@ void ofApp::update(){
     frameDiff.absDiff(simpleFrame1, simpleFrame2);
     frameDiff.threshold(64);
     frameDiff.blur();
-//    frameDiff.erode_3x3();
+    frameDiff.erode_3x3();
   }
   
   if (frameDiff.bAllocated) {
@@ -56,6 +67,11 @@ void ofApp::update(){
   
   fbo.begin();
   ofEnableAlphaBlending();
+  if (ofGetFrameNum() % 10 == 0) {
+    ofSetColor(255, 255, 255, 4);
+    ofDrawRectangle(0, 0, canvasWidth, canvasHeight);
+//    ofClearAlpha();
+  }
   ofBlendMode(OF_BLENDMODE_MULTIPLY);
   Particle::drawParticles();
   fbo.end();
@@ -89,7 +105,11 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+  if (key == 's') {
+    ofPixels pixels;
+    fbo.readToPixels(pixels);
+    ofSaveImage(pixels, "/Users/stevemeyfroidt/Desktop/Gestural-"+ofToString(ofGetFrameNum())+".png", OF_IMAGE_QUALITY_BEST);
+  }
 }
 
 //--------------------------------------------------------------

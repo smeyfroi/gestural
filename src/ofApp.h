@@ -1,4 +1,5 @@
 #pragma once
+//#define USE_CAMERA 1
 
 #include "ofMain.h"
 #include "ofxOpenCv.h"
@@ -23,7 +24,11 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
 private:
+#ifdef USE_CAMERA
   ofVideoGrabber video;
+#else
+  ofVideoPlayer video;
+#endif
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
   ofxCvGrayscaleImage frameDiff;
