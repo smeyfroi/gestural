@@ -1,6 +1,6 @@
 #include "particle.hpp"
 
-const int MAX_AGE = 8000;
+const int MAX_AGE = 800;
 extern const size_t canvasWidth = 72*64;
 extern const size_t canvasHeight = 72*48;
 
@@ -43,9 +43,9 @@ size_t Particle::particleCount() {
 
 Particle::Particle(float x, float y) :
 position(x, y),
-velocity(0.2, 0.0),
-acceleration(0.05, 0.0),
-radius(160.0),
+velocity(0.05, 0.0),
+acceleration(0.01, 0.0),
+radius(100.0),
 age(0)
 {
   velocity.rotate(ofRandom(360.0));
@@ -71,9 +71,10 @@ void Particle::draw() const {
   for (const auto& searchResult: searchResults) {
     size_t i = searchResult.first;
     float distanceSquared = searchResult.second;
-    float distanceScale = (1.0 - (sqrt(distanceSquared)/searchRadius));
-//    ofLogNotice()<<distanceScale<<"   "<<distanceSquared<<"  "<<(searchRadius*searchRadius);
-    ofColor color = ofColor(255.0*distanceScale*distanceScale);
+    float distanceScale = (sqrt(1.0 - (sqrt(distanceSquared)/searchRadius)));
+//    float distanceScale = (sqrt(distanceSquared)/searchRadius);
+//    ofColor color = ofColor(255.0*distanceScale,240.0*distanceScale,224.0*distanceScale, 255);
+    ofColor color = ofColor(255*distanceScale,240*distanceScale,230*distanceScale, 255.0*(MAX_AGE-age)/MAX_AGE);
     ofSetColor(color);
     Particle& otherParticle = particles[i];
     ofDrawLine(position, otherParticle.position);
