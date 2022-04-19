@@ -1,7 +1,7 @@
 #include "ofApp.h"
 #include "particle.hpp"
 
-const int MAX_NEW_PARTICLES = 200;
+const int MAX_NEW_PARTICLES = 500;
 const size_t canvasWidth = 72*37;
 const size_t canvasHeight = 72*25;
 const size_t resizedVideoWidth = 640;
@@ -19,7 +19,7 @@ void ofApp::setup(){
   // init drawing surface
   fbo.allocate(canvasWidth, canvasHeight, GL_RGB);
   fbo.begin();
-  ofBackground(ofColor::white);
+  ofBackground(ofColor::black);
   fbo.end();
 }
 
@@ -66,13 +66,13 @@ void ofApp::update(){
   Particle::updateParticles();
   
   fbo.begin();
-  ofEnableAlphaBlending();
-  if (ofGetFrameNum() % 10 == 0) {
-    ofSetColor(255, 255, 255, 4);
-    ofDrawRectangle(0, 0, canvasWidth, canvasHeight);
-//    ofClearAlpha();
-  }
-  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+//  ofEnableAlphaBlending();
+//  if (ofGetFrameNum() % 10 == 0) {
+//    ofSetColor(255, 255, 255, 4);
+//    ofDrawRectangle(0, 0, canvasWidth, canvasHeight);
+////    ofClearAlpha();
+//  }
+//  ofBlendMode(OF_BLENDMODE_MULTIPLY);
   Particle::drawParticles();
   fbo.end();
 }
@@ -86,19 +86,14 @@ void drawImage(const ofxCvImage& image) {
 }
 
 void ofApp::draw(){
-//  ofBackground(ofColor::white);
-//  drawImage(frameDiff);
-  
   ofSetColor(ofColor::white);
   ofDisableBlendMode();
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   
-  ofEnableAlphaBlending();
-//  drawImage(frameDiff);
-  drawImage(simpleFrame1);
-//  Particle::drawParticles();
+//  ofEnableAlphaBlending();
+//  drawImage(simpleFrame1);
   
-  ofSetColor(ofColor::black);
+  ofSetColor(ofColor::white);
   ofDrawBitmapString(ofGetFrameRate(), 20, 20);
   ofDrawBitmapString(Particle::particleCount(), 20, 40);
 }

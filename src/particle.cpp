@@ -1,6 +1,6 @@
 #include "particle.hpp"
 
-const int MAX_AGE = 800;
+const int MAX_AGE = 8000;
 extern const size_t canvasWidth = 72*64;
 extern const size_t canvasHeight = 72*48;
 
@@ -43,9 +43,9 @@ size_t Particle::particleCount() {
 
 Particle::Particle(float x, float y) :
 position(x, y),
-velocity(1.0, 0.0),
-acceleration(0.01, 0.0),
-radius(ofRandom(50.0)),
+velocity(0.2, 0.0),
+acceleration(0.05, 0.0),
+radius(160.0),
 age(0)
 {
   velocity.rotate(ofRandom(360.0));
@@ -53,18 +53,6 @@ age(0)
 }
 
 void Particle::update() {
-//  ofVec2f sumOtherVelocities;
-//  ofx::KDTree<ofVec2f>::SearchResults searchResults(10);
-//  spatialIndexPtr->findPointsWithinRadius(position, radius*radius, searchResults);
-//  for (const auto& searchResult: searchResults) {
-//    size_t i = searchResult.first;
-//    float distanceSquared = searchResult.second;
-//    Particle& otherParticle = particles[i];
-//    sumOtherVelocities += otherParticle.velocity;
-//  }
-//  if (sumOtherVelocities.length() > 0) {
-//    velocity = sumOtherVelocities.perpendicular().getNormalized();
-//  }
   velocity += acceleration;
   position += velocity;
   age++;
@@ -77,18 +65,16 @@ bool Particle::isDead() const {
 void Particle::draw() const {
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   ofPushView();
-//  ofNoFill();
-//  ofSetColor(ofColor::black);
-//  ofDrawCircle(position, radius);
   ofx::KDTree<ofVec2f>::SearchResults searchResults(10);
-  const float searchRadius = 2.0*float(radius);
+  const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
   for (const auto& searchResult: searchResults) {
     size_t i = searchResult.first;
     float distanceSquared = searchResult.second;
-    float distanceScale = 1.0-(distanceSquared/(searchRadius*searchRadius));
-    float ageScale = float(age)/float(MAX_AGE);
-    ofSetColor(96.0*ageScale, 16.0*ageScale, 32.0*ageScale,128.0*distanceScale);
+    float distanceScale = (1.0 - (sqrt(distanceSquared)/searchRadius));
+//    ofLogNotice()<<distanceScale<<"   "<<distanceSquared<<"  "<<(searchRadius*searchRadius);
+    ofColor color = ofColor(255.0*distanceScale*distanceScale);
+    ofSetColor(color);
     Particle& otherParticle = particles[i];
     ofDrawLine(position, otherParticle.position);
   }
