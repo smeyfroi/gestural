@@ -1,8 +1,6 @@
 #include "particle.hpp"
-
-const int MAX_AGE = 800;
-extern const size_t canvasWidth = 72*64;
-extern const size_t canvasHeight = 72*48;
+#include "globals.h"
+#include "gui.hpp"
 
 std::vector<Particle> Particle::particles;
 std::vector<ofVec2f> Particle::points;
@@ -13,7 +11,7 @@ void Particle::makeParticle(float x, float y) {
 }
 
 void Particle::drawParticles() {
-  for (const auto& particle : particles) {
+  for (auto& particle : particles) {
     particle.draw();
   }
 }
@@ -23,10 +21,10 @@ void Particle::updateParticles() {
     particle.update();
   }
   
-  if (ofGetFrameNum() % 25 != 0) return;
+  if (ofGetFrameNum() % 30 != 0) return;
   
   // remove dead particles
-  auto it = std::remove_if(particles.begin(), particles.end(), [](Particle p) { return p.isDead(); });
+  auto it = std::remove_if(particles.begin(), particles.end(), [](Particle& p) { return p.isDead(); });
   auto r = std::distance(it, particles.end());
   particles.erase(it, particles.end());
   
@@ -43,9 +41,10 @@ size_t Particle::particleCount() {
 
 Particle::Particle(float x, float y) :
 position(x, y),
-velocity(0.05, 0.0),
-acceleration(0.01, 0.0),
-radius(100.0),
+velocity(Gui::getInstance().particleVelocity, 0.0),
+acceleration(Gui::getInstance().particleAcceleration, 0.0),
+spin(Gui::getInstance().particleSpin),
+radius(Gui::getInstance().particleRadius),
 age(0)
 {
   velocity.rotate(ofRandom(360.0));
@@ -54,30 +53,49 @@ age(0)
 
 void Particle::update() {
   velocity += acceleration;
+  velocity.rotate(spin);
   position += velocity;
   age++;
 }
 
 bool Particle::isDead() const {
-  return (age > MAX_AGE || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > canvasWidth || position.y-radius > canvasHeight);
+  return (age > Gui::getInstance().particleMaxAge || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > Constants::canvasWidth || position.y-radius > Constants::canvasHeight);
 }
 
-void Particle::draw() const {
+void Particle::draw() {
+//  ofNoFill();
+//  ofSetColor(0, 0, 0, 32);
+//  ofDrawCircle(position.x, position.y, radius);
+  
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
-  ofPushView();
-  ofx::KDTree<ofVec2f>::SearchResults searchResults(10);
+  
+  ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
   const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
+  if (searchResults.size() == 0) return;
+  
+  ofPushView();
+  int count = 0;
+  ofVec2f centroid;
   for (const auto& searchResult: searchResults) {
-    size_t i = searchResult.first;
     float distanceSquared = searchResult.second;
-    float distanceScale = (sqrt(1.0 - (sqrt(distanceSquared)/searchRadius)));
+    if (distanceSquared == 0.0) continue;
+    size_t i = searchResult.first;
+    float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
+//    float distanceScale = 1-(sqrt(sqrt(distanceSquared)/searchRadius));
+//    float distanceScale = (sqrt(1.0 - (sqrt(distanceSquared)/searchRadius)));
 //    float distanceScale = (sqrt(distanceSquared)/searchRadius);
 //    ofColor color = ofColor(255.0*distanceScale,240.0*distanceScale,224.0*distanceScale, 255);
-    ofColor color = ofColor(255*distanceScale,240*distanceScale,230*distanceScale, 255.0*(MAX_AGE-age)/MAX_AGE);
+//    ofColor color = ofColor(255*distanceScale,255*distanceScale,255*distanceScale, 255.0*(MAX_AGE-age)/MAX_AGE);
+    ofColor color = ofColor(0, 0, 0, 255*distanceScale);
     ofSetColor(color);
     Particle& otherParticle = particles[i];
+    centroid += otherParticle.position;
+    ++count;
     ofDrawLine(position, otherParticle.position);
   }
+  centroid /= count;
+  acceleration += (position-centroid).normalize()/500;
+  acceleration = acceleration.normalize()/50;
   ofPopView();
 }

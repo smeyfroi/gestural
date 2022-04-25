@@ -14,7 +14,7 @@ public:
   Particle(float x, float y);
   void update();
   bool isDead() const;
-  void draw() const;
+  void draw();
   
 private:
   static std::vector<Particle> particles;
@@ -23,6 +23,7 @@ private:
   ofVec2f position;
   ofVec2f velocity;
   ofVec2f acceleration;
+  float spin;
   float radius;
   int age;
 };

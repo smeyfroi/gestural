@@ -1,24 +1,24 @@
 #include "ofApp.h"
 #include "particle.hpp"
-
-const int MAX_NEW_PARTICLES = 100;
-const size_t canvasWidth = 72*37;
-const size_t canvasHeight = 72*25;
-const size_t resizedVideoWidth = 640;
-const size_t resizedVideoHeight = 480;
+#include "globals.h"
+#include "ofFileUtils.h"
+#include "ofUtils.h"
+#include "gui.hpp"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  ofSetFrameRate(60);
+  ofSetFrameRate(30);
+  
 #ifdef USE_CAMERA
-  video.initGrabber(640, 480);
+  video.initGrabber(Constants::videoGrabWidth, Constants::videoGrabHeight);
 #else
   video.load("subject.mp4");
   video.play();
 #endif
-  // init drawing surface
-  fbo.allocate(canvasWidth, canvasHeight, GL_RGB);
+  
+  fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGB);
   fbo.begin();
+//  ofBackground(Constants::canvasBackgroundColor); // doesn't work, always black
   ofBackground(ofColor::white);
   fbo.end();
 }
@@ -26,6 +26,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
   video.update();
+  
   if (video.isFrameNew()) {
     if (frame2.bAllocated) {
       frame1 = frame2;
@@ -38,28 +39,28 @@ void ofApp::update(){
     frame2.mirror(false, false);
 #endif
     ofxCvColorImage resizedFrame2;
-    resizedFrame2.allocate(resizedVideoWidth, resizedVideoHeight);
+    resizedFrame2.allocate(Constants::resizedVideoWidth, Constants::resizedVideoHeight);
 //    resizedFrame2.allocate(frame2.width, frame2.height);
     resizedFrame2.scaleIntoMe(frame2, CV_INTER_AREA);
     simpleFrame2 = resizedFrame2;
-  }
   
-  if (frame1.bAllocated && frame2.bAllocated) {
-    frameDiff.absDiff(simpleFrame1, simpleFrame2);
-    frameDiff.threshold(64);
-    frameDiff.blur();
-    frameDiff.erode_3x3();
-  }
-  
-  if (frameDiff.bAllocated) {
-    const auto& pixels = frameDiff.getPixels();
-    const float scale = float(pixels.getWidth()) / float(canvasWidth);
-    for (int i=0; i<MAX_NEW_PARTICLES; ++i) {
-      size_t x = ofRandom(pixels.getWidth());
-      size_t y = ofRandom(pixels.getHeight());
-      if (pixels.getColor(x, y).getBrightness() > 128) {
-        Particle::makeParticle(x/scale, y/scale);
-      };
+    if (frame1.bAllocated && frame2.bAllocated) {
+      frameDiff.absDiff(simpleFrame1, simpleFrame2);
+      frameDiff.threshold(64);
+      frameDiff.blur();
+      frameDiff.erode_3x3();
+    }
+    
+    if (frameDiff.bAllocated) {
+      const auto& pixels = frameDiff.getPixels();
+      const float scale = float(pixels.getWidth()) / float(Constants::canvasWidth);
+      for (int i=0; i<Gui::getInstance().maxAddedParticles; ++i) {
+        size_t x = ofRandom(pixels.getWidth());
+        size_t y = ofRandom(pixels.getHeight());
+        if (pixels.getColor(x, y).getBrightness() > 128) {
+          Particle::makeParticle(x/scale, y/scale);
+        };
+      }
     }
   }
   
@@ -67,11 +68,12 @@ void ofApp::update(){
   
   fbo.begin();
   ofEnableAlphaBlending();
-  if (ofGetFrameNum() % 25 == 0) {
-    ofSetColor(255, 255, 255, 4);
-    ofDrawRectangle(0, 0, canvasWidth, canvasHeight);
-//    ofClearAlpha();
+  if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
+    ofSetColor(255, 255, 255, 8);
+    ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
+    ofClearAlpha();
   }
+
   ofBlendMode(OF_BLENDMODE_MULTIPLY);
   Particle::drawParticles();
   fbo.end();
@@ -90,12 +92,14 @@ void ofApp::draw(){
   ofDisableBlendMode();
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   
-//  ofEnableAlphaBlending();
-//  drawImage(simpleFrame1);
+  if (Gui::getInstance().showVideo) {
+    ofEnableAlphaBlending();
+    drawImage(simpleFrame1);
+  }
   
-  ofSetColor(ofColor::black);
-  ofDrawBitmapString(ofGetFrameRate(), 20, 20);
-  ofDrawBitmapString(Particle::particleCount(), 20, 40);
+  Gui::getInstance().performance =  "FPS: "+ofToString(int(ofGetFrameRate())) + " Marks: "+ofToString(Particle::particleCount());
+  
+  Gui::getInstance().draw();
 }
 
 //--------------------------------------------------------------
@@ -103,7 +107,9 @@ void ofApp::keyPressed(int key){
   if (key == 's') {
     ofPixels pixels;
     fbo.readToPixels(pixels);
-    ofSaveImage(pixels, "/Users/stevemeyfroidt/Desktop/Gestural-"+ofToString(ofGetFrameNum())+".png", OF_IMAGE_QUALITY_BEST);
+    ofSaveImage(pixels, ofFilePath::getUserHomeDir()+"/gestural/snapshot-"+ofGetTimestampString()+".png", OF_IMAGE_QUALITY_BEST);
+  } else if (key == ' ') {
+    Gui::getInstance().toggleShow();
   }
 }
 
