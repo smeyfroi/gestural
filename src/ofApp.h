@@ -1,5 +1,5 @@
 #pragma once
-// #define USE_CAMERA 1
+#define USE_CAMERA 1
 
 #include "ofMain.h"
 #include "ofxOpenCv.h"
