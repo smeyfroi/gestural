@@ -67,6 +67,10 @@ void Particle::draw() {
 //  ofSetColor(0, 0, 0, 32);
 //  ofDrawCircle(position.x, position.y, radius);
   
+  ofSetColor(0, 0, 0, 32);
+  ofFill();
+  ofDrawCircle(position.x, position.y, 1);
+  
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   
   ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
