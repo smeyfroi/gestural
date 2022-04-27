@@ -13,6 +13,7 @@ Gui::Gui() {
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
   particleGroup.add(particleVelocity.setup("Start speed", 0, 0, 10));
   particleGroup.add(particleAcceleration.setup("Start acceleration", 0.05, 0, 1));
+  particleGroup.add(particleAccelerationDamping.setup("Damping", 10, 1, 100));
   particleGroup.add(particleSpin.setup("Spin", 0, 2, 10));
   particleGroup.add(particleRadius.setup("Influence", 50, 0, 500));
   panel.add(&particleGroup);

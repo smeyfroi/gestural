@@ -24,6 +24,7 @@ public:
   ofxIntSlider particleMaxAge;
   ofxFloatSlider particleVelocity;
   ofxFloatSlider particleAcceleration;
+  ofxFloatSlider particleAccelerationDamping;
   ofxIntSlider particleSpin;
   ofxIntSlider particleRadius;
   
