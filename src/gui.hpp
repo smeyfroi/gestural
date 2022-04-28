@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofxGui.h"
+#include <string>
+#include "palette.hpp"
 
 class Gui {
 public:
@@ -27,8 +29,11 @@ public:
   ofxFloatSlider particleAccelerationDamping;
   ofxIntSlider particleSpin;
   ofxIntSlider particleRadius;
+  ofxInputField<std::string> palette1Url;
+  Palette palette1 {""};
   
 private:
   bool show = true;
   ofxPanel panel;
+  void palette1UrlChanged(std::string& url);
 };

@@ -4,6 +4,7 @@
 #include "ofFileUtils.h"
 #include "ofUtils.h"
 #include "gui.hpp"
+#include "palette.hpp"
 
 //--------------------------------------------------------------
 void ofApp::setup(){

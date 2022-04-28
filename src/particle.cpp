@@ -91,7 +91,8 @@ void Particle::draw() {
 //    float distanceScale = (sqrt(distanceSquared)/searchRadius);
 //    ofColor color = ofColor(255.0*distanceScale,240.0*distanceScale,224.0*distanceScale, 255);
 //    ofColor color = ofColor(255*distanceScale,255*distanceScale,255*distanceScale, 255.0*(MAX_AGE-age)/MAX_AGE);
-    ofColor color = ofColor(0, 0, 0, 255*distanceScale);
+//    ofColor color = ofColor(0, 0, 0, 255*distanceScale);
+    ofColor color = Gui::getInstance().palette1.getInterpolated(distanceScale);
     ofSetColor(color);
     Particle& otherParticle = particles[i];
     centroid += otherParticle.position;
