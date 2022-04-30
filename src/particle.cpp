@@ -103,7 +103,7 @@ void Particle::draw() {
     ofSetLineWidth(Gui::getInstance().lineWidth);
     ofDrawLine(position, otherParticle.position);
   }
-  
+
   centroid /= count;
   acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
   acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;

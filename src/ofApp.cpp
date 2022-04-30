@@ -82,13 +82,6 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void drawImage(const ofxCvImage& image) {
-  for (float a=0.0; a<=1.0; a+=0.01) {
-    ofSetColor(Gui::getInstance().palette1.getInterpolated(a));
-    ofDrawLine(a*100, 0, a*100, 50);
-    ofSetColor(ofColor::black);
-    ofDrawLine(a*100, 51, a*100, 60);
-  }
-  
   if (image.bAllocated) {
     ofSetColor(255, 255, 255, 64);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
