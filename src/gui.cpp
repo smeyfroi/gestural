@@ -17,6 +17,7 @@ Gui::Gui() {
   particleGroup.add(particleAccelerationDamping.setup("Damping", 10, 1, 100));
   particleGroup.add(particleSpin.setup("Spin", 0, 2, 10));
   particleGroup.add(particleRadius.setup("Influence", 50, 0, 500));
+  particleGroup.add(lineWidth.setup("Line width", 2, 1, 20));
   panel.add(&particleGroup);
   
   palette1Url.addListener(this, &Gui::palette1UrlChanged);

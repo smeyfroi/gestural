@@ -67,9 +67,9 @@ void Particle::draw() {
 //  ofSetColor(0, 0, 0, 32);
 //  ofDrawCircle(position.x, position.y, radius);
   
-  ofSetColor(0, 0, 0, 32);
-  ofFill();
-  ofDrawCircle(position.x, position.y, 1);
+//  ofSetColor(0, 0, 0, 32);
+//  ofFill();
+//  ofDrawCircle(position.x, position.y, 1);
   
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   
@@ -83,22 +83,27 @@ void Particle::draw() {
   ofVec2f centroid;
   for (const auto& searchResult: searchResults) {
     float distanceSquared = searchResult.second;
-    if (distanceSquared == 0.0) continue;
     size_t i = searchResult.first;
-    float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
-//    float distanceScale = 1-(sqrt(sqrt(distanceSquared)/searchRadius));
-//    float distanceScale = (sqrt(1.0 - (sqrt(distanceSquared)/searchRadius)));
-//    float distanceScale = (sqrt(distanceSquared)/searchRadius);
-//    ofColor color = ofColor(255.0*distanceScale,240.0*distanceScale,224.0*distanceScale, 255);
-//    ofColor color = ofColor(255*distanceScale,255*distanceScale,255*distanceScale, 255.0*(MAX_AGE-age)/MAX_AGE);
-//    ofColor color = ofColor(0, 0, 0, 255*distanceScale);
-    ofColor color = Gui::getInstance().palette1.getInterpolated(distanceScale);
-    ofSetColor(color);
     Particle& otherParticle = particles[i];
+    if (position == otherParticle.position) continue;
+    
     centroid += otherParticle.position;
     ++count;
+    
+    float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
+    ofColor color = Gui::getInstance().palette1.getInterpolated(distanceScale);
+    ofSetColor(color);
+    
+    if (distanceSquared > 1.0) {
+      ofFill();
+      ofSetLineWidth(0);
+      ofDrawCircle(position, Gui::getInstance().lineWidth/2.0-2.0);
+      ofDrawCircle(otherParticle.position, Gui::getInstance().lineWidth/2.0-2.0);
+    }
+    ofSetLineWidth(Gui::getInstance().lineWidth);
     ofDrawLine(position, otherParticle.position);
   }
+  
   centroid /= count;
   acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
   acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;

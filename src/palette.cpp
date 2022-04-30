@@ -31,8 +31,9 @@ ofColor Palette::getInterpolated(float amount) {
   if (colors.size() == 1) return colors[0];
   size_t i1 = amount*(colors.size()-1);
   float lerpAmount = amount-1.0/(colors.size()-1)*i1;
+  lerpAmount *= colors.size()-1;
   // |---|---|---|---|
   // 0   .25 .5  .75 1
-//  cout<<amount<<"   "<<"   "<<i1<<"   "<<colors.size()<<"  "<<lerpAmount<<endl;
+  //  cout<<amount<<"   "<<"   "<<i1<<"   "<<colors.size()<<"  "<<lerpAmount<<endl;
   return colors[i1].getLerped(colors[i1+1], lerpAmount);
 }

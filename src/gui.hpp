@@ -31,6 +31,7 @@ public:
   ofxIntSlider particleRadius;
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
+  ofxIntSlider lineWidth;
   
 private:
   bool show = true;
