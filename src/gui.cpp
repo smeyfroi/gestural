@@ -20,7 +20,7 @@ Gui::Gui() {
   panel.add(&particleGroup);
   
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
-  panel.add(palette1Url.setup("coolers.co URL 1", "https://coolors.co/palette/000000-14213d-fca311-e5e5e5-ffffff"));
+  panel.add(palette1Url.setup("coolers.co URL 1", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
 }
 
 void Gui::palette1UrlChanged(std::string& url) {
