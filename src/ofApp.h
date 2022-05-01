@@ -10,6 +10,7 @@ class ofApp : public ofBaseApp{
 	public:
 		void setup();
     void backgroundColorChanged(ofColor&);
+    void videoFilePathChanged(std::string&);
 		void update();
 		void draw();
 

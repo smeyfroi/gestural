@@ -120,7 +120,7 @@ void Particle::draw() {
   
   if (Gui::getInstance().drawTrails) {
     ofFill();
-    ofSetColor(ofColor::black);
+//    ofSetColor(ofColor::black);
     ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
   }
 

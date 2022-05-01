@@ -23,6 +23,7 @@ public:
   
   ofxIntSlider maxAddedParticles;
   ofxIntSlider fadeDelay;
+  ofParameter<void> loadVideoButton;
   ofxToggle showVideo;
   
   ofxToggle drawTrails;
@@ -43,9 +44,12 @@ public:
   ofxToggle fadeWithAge;
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
+  std::string videoPath {""};
+  ofEvent<std::string> videoPathChanged;
   
 private:
   bool show = true;
   ofxPanel panel;
+  void loadVideo();
   void palette1UrlChanged(std::string& url);
 };

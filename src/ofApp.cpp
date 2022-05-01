@@ -23,6 +23,8 @@ void ofApp::setup(){
   backgroundColorChangeListener = Gui::getInstance().backgroundColor.newListener(this, &ofApp::backgroundColorChanged);
   ofColor c = Gui::getInstance().backgroundColor;
   backgroundColorChanged(c);
+  
+  ofAddListener(Gui::getInstance().videoPathChanged, this, &ofApp::videoFilePathChanged);
 }
 
 void ofApp::backgroundColorChanged(ofColor& c) {
@@ -31,6 +33,12 @@ void ofApp::backgroundColorChanged(ofColor& c) {
   fbo.begin();
   ofBackground(Gui::getInstance().backgroundColor);
   fbo.end();
+}
+
+void ofApp::videoFilePathChanged(string& path) {
+  video.load(path);
+  video.setVolume(0);
+  video.play();
 }
 
 //--------------------------------------------------------------
