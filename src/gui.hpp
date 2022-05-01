@@ -18,20 +18,27 @@ private:
 public:
   void toggleShow();
   void draw();
+  
+  ofxLabel performance;
+  
   ofxIntSlider maxAddedParticles;
   ofxIntSlider fadeDelay;
   ofxToggle showVideo;
-  ofxLabel performance;
+  
   ofxGuiGroup particleGroup;
   ofxIntSlider particleMaxAge;
   ofxFloatSlider particleVelocity;
   ofxFloatSlider particleAcceleration;
   ofxFloatSlider particleAccelerationDamping;
-  ofxIntSlider particleSpin;
+  ofxFloatSlider particleSpin;
   ofxIntSlider particleRadius;
+  ofxIntSlider lineWidth;
+  
+  ofxGuiGroup colorGroup;
+  ofxToggle colorFromVideo;
+  ofxToggle fadeWithAge;
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
-  ofxIntSlider lineWidth;
   
 private:
   bool show = true;

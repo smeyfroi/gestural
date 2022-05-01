@@ -41,7 +41,6 @@ void ofApp::update(){
 #endif
     ofxCvColorImage resizedFrame2;
     resizedFrame2.allocate(Constants::resizedVideoWidth, Constants::resizedVideoHeight);
-//    resizedFrame2.allocate(frame2.width, frame2.height);
     resizedFrame2.scaleIntoMe(frame2, CV_INTER_AREA);
     simpleFrame2 = resizedFrame2;
   
@@ -55,11 +54,14 @@ void ofApp::update(){
     if (frameDiff.bAllocated) {
       const auto& pixels = frameDiff.getPixels();
       const float scale = float(pixels.getWidth()) / float(Constants::canvasWidth);
+      const auto& framePixels = frame2.getPixels();
+      const float scaleSimpleToFrame = float(framePixels.getWidth()) / float(pixels.getWidth());
       for (int i=0; i<Gui::getInstance().maxAddedParticles; ++i) {
         size_t x = ofRandom(pixels.getWidth());
         size_t y = ofRandom(pixels.getHeight());
         if (pixels.getColor(x, y).getBrightness() > 128) {
-          Particle::makeParticle(x/scale, y/scale);
+          ofColor frameColor = framePixels.getColor(x*scaleSimpleToFrame, y*scaleSimpleToFrame);
+          Particle::makeParticle(x/scale, y/scale, frameColor);
         };
       }
     }

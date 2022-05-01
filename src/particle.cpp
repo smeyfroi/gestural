@@ -10,6 +10,10 @@ void Particle::makeParticle(float x, float y) {
   particles.push_back(Particle(x, y));
 }
 
+void Particle::makeParticle(float x, float y, ofColor color) {
+  particles.push_back(Particle(x, y, color));
+}
+
 void Particle::drawParticles() {
   for (auto& particle : particles) {
     particle.draw();
@@ -51,9 +55,16 @@ age(0)
   acceleration.rotate(ofRandom(360.0));
 }
 
+Particle::Particle(float x, float y, ofColor color_) :
+Particle(x, y)
+{
+  color = color_;
+}
+
 void Particle::update() {
   velocity += acceleration;
   velocity.rotate(spin);
+  acceleration.rotate(spin);
   position += velocity;
   age++;
 }
@@ -63,13 +74,17 @@ bool Particle::isDead() const {
 }
 
 void Particle::draw() {
-//  ofNoFill();
-//  ofSetColor(0, 0, 0, 32);
-//  ofDrawCircle(position.x, position.y, radius);
+  if (Gui::getInstance().colorFromVideo) {
+    ofColor c = color;
+    if (Gui::getInstance().fadeWithAge) {
+      c.a = 255.0*float(Gui::getInstance().particleMaxAge-age)/Gui::getInstance().particleMaxAge;
+    }
+    ofSetColor(c);
+  }
   
-//  ofSetColor(0, 0, 0, 32);
-//  ofFill();
-//  ofDrawCircle(position.x, position.y, 1);
+  ofFill();
+  ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
+  return;
   
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   
@@ -91,7 +106,7 @@ void Particle::draw() {
     ++count;
     
     float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
-    ofColor color = Gui::getInstance().palette1.getInterpolated(distanceScale);
+    ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
     ofSetColor(color);
     
     if (distanceSquared > 1.0) {
