@@ -9,6 +9,7 @@ class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
+    void backgroundColorChanged(ofColor&);
 		void update();
 		void draw();
 
@@ -34,4 +35,5 @@ private:
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
   ofxCvGrayscaleImage frameDiff;
   ofFbo fbo;
+  ofEventListener backgroundColorChangeListener;
 };

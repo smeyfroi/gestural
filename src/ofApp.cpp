@@ -10,17 +10,26 @@
 void ofApp::setup(){
   ofSetFrameRate(30);
   
+  ofSeedRandom();
+  
 #ifdef USE_CAMERA
   video.initGrabber(Constants::videoGrabWidth, Constants::videoGrabHeight);
 #else
   video.load("subject.mp4");
+  video.setVolume(0);
   video.play();
 #endif
   
+  backgroundColorChangeListener = Gui::getInstance().backgroundColor.newListener(this, &ofApp::backgroundColorChanged);
+  ofColor c = Gui::getInstance().backgroundColor;
+  backgroundColorChanged(c);
+}
+
+void ofApp::backgroundColorChanged(ofColor& c) {
+  fbo.clear();
   fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGB);
   fbo.begin();
-//  ofBackground(Constants::canvasBackgroundColor); // doesn't work, always black
-  ofBackground(ofColor::white);
+  ofBackground(Gui::getInstance().backgroundColor);
   fbo.end();
 }
 
@@ -70,9 +79,12 @@ void ofApp::update(){
   Particle::updateParticles();
   
   fbo.begin();
-  ofEnableAlphaBlending();
+  
   if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
-    ofSetColor(255, 255, 255, 8);
+    ofColor c = Gui::getInstance().backgroundColor;
+    c.a = 8;
+    ofSetColor(c);
+    ofEnableAlphaBlending();
     ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
     ofClearAlpha();
   }

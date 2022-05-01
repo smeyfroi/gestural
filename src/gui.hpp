@@ -25,6 +25,9 @@ public:
   ofxIntSlider fadeDelay;
   ofxToggle showVideo;
   
+  ofxToggle drawTrails;
+  ofxToggle drawConnections;
+  
   ofxGuiGroup particleGroup;
   ofxIntSlider particleMaxAge;
   ofxFloatSlider particleVelocity;
@@ -35,6 +38,7 @@ public:
   ofxIntSlider lineWidth;
   
   ofxGuiGroup colorGroup;
+  ofParameter<ofColor> backgroundColor;
   ofxToggle colorFromVideo;
   ofxToggle fadeWithAge;
   ofxInputField<std::string> palette1Url;

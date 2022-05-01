@@ -62,9 +62,9 @@ Particle(x, y)
 }
 
 void Particle::update() {
-  velocity += acceleration;
   velocity.rotate(spin);
   acceleration.rotate(spin);
+  velocity += acceleration;
   position += velocity;
   age++;
 }
@@ -81,17 +81,12 @@ void Particle::draw() {
     }
     ofSetColor(c);
   }
-  
-  ofFill();
-  ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
-  return;
-  
+    
   if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   
   ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
   const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
-  if (searchResults.size() == 0) return;
   
   ofPushView();
   int count = 0;
@@ -105,18 +100,28 @@ void Particle::draw() {
     centroid += otherParticle.position;
     ++count;
     
-    float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
-    ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
-    ofSetColor(color);
-    
-    if (distanceSquared > 1.0) {
-      ofFill();
-      ofSetLineWidth(0);
-      ofDrawCircle(position, Gui::getInstance().lineWidth/2.0-2.0);
-      ofDrawCircle(otherParticle.position, Gui::getInstance().lineWidth/2.0-2.0);
+    if (! Gui::getInstance().colorFromVideo) {
+      float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
+      ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
+      ofSetColor(color);
     }
-    ofSetLineWidth(Gui::getInstance().lineWidth);
-    ofDrawLine(position, otherParticle.position);
+    
+    if (Gui::getInstance().drawConnections) {
+      if (distanceSquared > 1.0) {
+        ofFill();
+        ofSetLineWidth(0);
+        ofDrawCircle(position, Gui::getInstance().lineWidth/2.0-2.0);
+        ofDrawCircle(otherParticle.position, Gui::getInstance().lineWidth/2.0-2.0);
+      }
+      ofSetLineWidth(Gui::getInstance().lineWidth);
+      ofDrawLine(position, otherParticle.position);
+    }
+  }
+  
+  if (Gui::getInstance().drawTrails) {
+    ofFill();
+    ofSetColor(ofColor::black);
+    ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
   }
 
   centroid /= count;

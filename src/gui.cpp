@@ -9,12 +9,15 @@ Gui::Gui() {
   panel.add(maxAddedParticles.setup("New marks", 100, 0, 1000));
   panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
   panel.add(showVideo.setup("Show video", true));
+
+  panel.add(drawTrails.setup("Draw trails", true));
+  panel.add(drawConnections.setup("Draw connections", false));
   
   particleGroup.setup("Marks");
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
   particleGroup.add(particleVelocity.setup("Start speed", 0, 0, 10));
   particleGroup.add(particleAcceleration.setup("Start acceleration", 0.05, 0, 1));
-  particleGroup.add(particleSpin.setup("Spin", 0, 0, 5));
+  particleGroup.add(particleSpin.setup("Spin", 0, 0, 10));
   particleGroup.add(lineWidth.setup("Line width", 2, 1, 20));
 //  panel.add(&particleGroup);
   
@@ -24,6 +27,7 @@ Gui::Gui() {
   panel.add(&particleGroup);
   
   colorGroup.setup("Colours");
+  colorGroup.add(backgroundColor.set("Background", ofColor(255, 255), ofColor(0, 255), ofColor(255, 255)));
   colorGroup.add(colorFromVideo.setup("Use video colours", true));
   colorGroup.add(fadeWithAge.setup("Fade with age", true));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
