@@ -7,7 +7,7 @@ Gui::Gui() {
   panel.setDefaultWidth(300);
   panel.add(performance.setup("", ""));
   
-  panel.add(maxAddedParticles.setup("New marks", 100, 0, 1000));
+  panel.add(maxAddedParticles.setup("New marks", 200, 0, 1000));
   panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
   loadVideoButton.addListener(this, &Gui::loadVideo);
   panel.add(loadVideoButton.set("Load video file"));
@@ -18,15 +18,15 @@ Gui::Gui() {
   
   particleGroup.setup("Marks");
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
-  particleGroup.add(particleVelocity.setup("Start speed", 0, 0, 10));
-  particleGroup.add(particleAcceleration.setup("Start acceleration", 0.05, 0, 1));
-  particleGroup.add(particleSpin.setup("Spin", 0.03, 0, 5));
-  particleGroup.add(lineWidth.setup("Line width", 2, 1, 20));
+  particleGroup.add(particleVelocity.setup("Start speed", 1.0, 0, 10));
+  particleGroup.add(particleAcceleration.setup("Start acceleration", 0.00, 0, 1));
+  particleGroup.add(particleSpin.setup("Spin", 0.0, -5.0, 5.0));
+  particleGroup.add(lineWidth.setup("Line width", 6, 1, 20));
 //  panel.add(&particleGroup);
   
   
   particleGroup.add(particleAccelerationDamping.setup("Damping", 10, 1, 20));
-  particleGroup.add(particleRadius.setup("Influence", 50, 0, 500));
+  particleGroup.add(particleRadius.setup("Influence", 200, 0, 500));
   panel.add(&particleGroup);
   
   colorGroup.setup("Colours");
@@ -34,7 +34,7 @@ Gui::Gui() {
   colorGroup.add(colorFromVideo.setup("Use video colours", true));
   colorGroup.add(fadeWithAge.setup("Fade with age", true));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
-  colorGroup.add(palette1Url.setup("coolers.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
+  colorGroup.add(palette1Url.setup("coolers.co URL", "https://coolors.co/palette/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226"));
   panel.add(&colorGroup);
 }
 

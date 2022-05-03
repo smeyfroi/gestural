@@ -74,21 +74,20 @@ bool Particle::isDead() const {
 }
 
 void Particle::draw() {
-  if (Gui::getInstance().colorFromVideo) {
-    ofColor c = color;
-    if (Gui::getInstance().fadeWithAge) {
-      c.a = 255.0*float(Gui::getInstance().particleMaxAge-age)/Gui::getInstance().particleMaxAge;
-    }
-    ofSetColor(c);
+  ofColor c = color;
+  if (Gui::getInstance().fadeWithAge) {
+    c.a = 255.0*float(Gui::getInstance().particleMaxAge-age)/Gui::getInstance().particleMaxAge;
   }
+  ofSetColor(c);
     
-  if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
+//  if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
   
   ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
   const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
   
   ofPushView();
+  
   int count = 0;
   ofVec2f centroid;
   for (const auto& searchResult: searchResults) {
@@ -100,13 +99,13 @@ void Particle::draw() {
     centroid += otherParticle.position;
     ++count;
     
-    if (! Gui::getInstance().colorFromVideo) {
-      float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
-      ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
-      ofSetColor(color);
-    }
-    
     if (Gui::getInstance().drawConnections) {
+      if (! Gui::getInstance().colorFromVideo) {
+        float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
+        ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
+        ofSetColor(color);
+      }
+    
       if (distanceSquared > 1.0) {
         ofFill();
         ofSetLineWidth(0);
@@ -120,12 +119,14 @@ void Particle::draw() {
   
   if (Gui::getInstance().drawTrails) {
     ofFill();
-//    ofSetColor(ofColor::black);
     ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
   }
 
-  centroid /= count;
-  acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
-  acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;
+  if (count != 0) {
+    centroid /= count;
+    acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
+    acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;
+  }
+  
   ofPopView();
 }

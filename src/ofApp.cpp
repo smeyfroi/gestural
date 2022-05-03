@@ -77,8 +77,15 @@ void ofApp::update(){
         size_t x = ofRandom(pixels.getWidth());
         size_t y = ofRandom(pixels.getHeight());
         if (pixels.getColor(x, y).getBrightness() > 128) {
-          ofColor frameColor = framePixels.getColor(x*scaleSimpleToFrame, y*scaleSimpleToFrame);
-          Particle::makeParticle(x/scale, y/scale, frameColor);
+          if (Gui::getInstance().colorFromVideo) {
+            ofColor frameColor = framePixels.getColor(x*scaleSimpleToFrame, y*scaleSimpleToFrame);
+            Particle::makeParticle(x/scale, y/scale, frameColor);
+          } else {
+            // default colour choice from palette using perlin noise
+            float noiseScale = 0.01;
+            float noise = ofNoise(x*noiseScale, y*noiseScale, ofGetFrameNum()*noiseScale, 1.0);
+            Particle::makeParticle(x/scale, y/scale, ofColor(Gui::getInstance().palette1.getInterpolated(noise)));
+          }
         };
       }
     }
