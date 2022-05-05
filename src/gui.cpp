@@ -41,11 +41,12 @@ Gui::Gui() {
 void Gui::loadVideo() {
   auto dialogResult = ofSystemLoadDialog("Load video", false, ofFilePath::getUserHomeDir());
   if (dialogResult.bSuccess) {
-    if (ofToUpper(ofFilePath::getFileExt(dialogResult.getPath())) == "MOV") {
+    auto ext = ofToUpper(ofFilePath::getFileExt(dialogResult.getPath()));
+    if (ext == "MOV" || ext == "MP4") {
       videoPath = dialogResult.getPath();
       ofNotifyEvent(videoPathChanged, videoPath, this);
     } else {
-      ofSystemAlertDialog("Videos must be '.mov' files");
+      ofSystemAlertDialog("Videos must be '.mov' or '.mp4' files");
     }
   }
 }
