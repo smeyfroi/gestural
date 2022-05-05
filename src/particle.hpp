@@ -8,16 +8,14 @@
 
 class Particle {
 public:
-  static void makeParticle(float x, float y);
-  static void makeParticle(float x, float y, ofColor color);
+  static void makeParticle(float x, float y, ofColor videoColor, ofColor paletteColor);
   static void drawParticles();
   static void updateParticles();
   static size_t particleCount();
-  Particle(float x, float y);
-  Particle(float x, float y, ofColor color_);
+  Particle(float x, float y, ofColor videoColor, ofColor paletteColor);
   void update();
   bool isDead() const;
-  void draw();
+  void draw() const;
   
 private:
   static std::vector<Particle> particles;
@@ -29,5 +27,6 @@ private:
   float spin;
   float radius;
   int age;
-  ofColor color;
+  ofColor videoColor;
+  ofColor paletteColor;
 };

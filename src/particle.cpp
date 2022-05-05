@@ -1,17 +1,14 @@
 #include "particle.hpp"
 #include "globals.h"
 #include "gui.hpp"
+#include <algorithm>
 
 std::vector<Particle> Particle::particles;
 std::vector<ofVec2f> Particle::points;
 unique_ptr<ofx::KDTree<ofVec2f>> Particle::spatialIndexPtr;
 
-void Particle::makeParticle(float x, float y) {
-  particles.push_back(Particle(x, y));
-}
-
-void Particle::makeParticle(float x, float y, ofColor color) {
-  particles.push_back(Particle(x, y, color));
+void Particle::makeParticle(float x, float y, ofColor videoColor, ofColor paletteColor) {
+  particles.push_back(Particle(x, y, videoColor, paletteColor));
 }
 
 void Particle::drawParticles() {
@@ -43,25 +40,39 @@ size_t Particle::particleCount() {
   return particles.size();
 }
 
-Particle::Particle(float x, float y) :
+Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
 position(x, y),
 velocity(Gui::getInstance().particleVelocity, 0.0),
 acceleration(Gui::getInstance().particleAcceleration, 0.0),
 spin(Gui::getInstance().particleSpin),
 radius(Gui::getInstance().particleRadius),
-age(0)
+age(0),
+videoColor(videoColor_),
+paletteColor(paletteColor_)
 {
   velocity.rotate(ofRandom(360.0));
   acceleration.rotate(ofRandom(360.0));
 }
 
-Particle::Particle(float x, float y, ofColor color_) :
-Particle(x, y)
-{
-  color = color_;
-}
-
 void Particle::update() {
+  ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
+  spatialIndexPtr->findPointsWithinRadius(position, radius, searchResults);
+  
+  int count = 0;
+  ofVec2f centroid;
+  for (const auto& searchResult: searchResults) {
+    const Particle& otherParticle = particles[searchResult.first];
+    if (position == otherParticle.position) continue;
+    centroid += otherParticle.position;
+    ++count;
+  }
+  
+  if (count != 0) {
+    centroid /= count;
+    acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
+    acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;
+  }
+  
   velocity.rotate(spin);
   acceleration.rotate(spin);
   velocity += acceleration;
@@ -73,39 +84,57 @@ bool Particle::isDead() const {
   return (age > Gui::getInstance().particleMaxAge || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > Constants::canvasWidth || position.y-radius > Constants::canvasHeight);
 }
 
-void Particle::draw() {
-  ofColor c = color;
-  if (Gui::getInstance().fadeWithAge) {
-    c.a = 255.0*float(Gui::getInstance().particleMaxAge-age)/Gui::getInstance().particleMaxAge;
-  }
-  ofSetColor(c);
-    
-//  if (spatialIndexPtr->kdtree_get_point_count() == 0) return;
-  
+// alpha 0.0-1.0
+ofColor fade(ofColor c, float alpha) {
+  c.a = alpha*255;
+  return c;
+}
+
+void Particle::draw() const {
+  ofPushView();
+
   ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
   const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
+
+  // find alpha except when drawConnection and fadeWithDistance (that's calculated per connection)
+  float alpha = 1.0; // keep this 0.0-1.0 until it gets applied
+  if (Gui::getInstance().fadeWithAge) {
+    float maxAge = Gui::getInstance().particleMaxAge;
+    alpha *= (maxAge - age) / maxAge;
+  }
+  if (Gui::getInstance().drawTrails && Gui::getInstance().fadeWithDistance) {
+    // 0.2 to 1.0 for 0 to 4 particles in its radius
+    std::size_t m = 4;
+    auto n = std::max(m, spatialIndexPtr->kdtree_get_point_count());
+    alpha *= (1.0-0.2)/m*n+0.2;
+  }
+
+  if (Gui::getInstance().drawTrails) {
+    if (Gui::getInstance().colorFromVideo) {
+      ofSetColor(fade(videoColor, alpha));
+    } else {
+      ofSetColor(fade(paletteColor, alpha));
+    }
+    ofFill();
+    ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
+  }
   
-  ofPushView();
-  
-  int count = 0;
-  ofVec2f centroid;
-  for (const auto& searchResult: searchResults) {
-    float distanceSquared = searchResult.second;
-    size_t i = searchResult.first;
-    Particle& otherParticle = particles[i];
-    if (position == otherParticle.position) continue;
-    
-    centroid += otherParticle.position;
-    ++count;
-    
-    if (Gui::getInstance().drawConnections) {
-      if (! Gui::getInstance().colorFromVideo) {
-        float distanceScale = 1-(distanceSquared/(searchRadius*searchRadius));
-        ofColor paletteColor = Gui::getInstance().palette1.getInterpolated(distanceScale);
-        ofSetColor(color);
+  if (Gui::getInstance().drawConnections) {
+    for (const auto& searchResult: searchResults) {
+      const Particle& otherParticle = particles[searchResult.first];
+      if (position == otherParticle.position) continue;
+      float distanceSquared = searchResult.second;
+      float distanceScale = distanceSquared/(searchRadius*searchRadius); // 0 close, 1 far
+      if (!Gui::getInstance().fadeWithDistance) {
+        alpha *= (1.0-distanceScale);
       }
-    
+      if (Gui::getInstance().colorFromVideo) {
+        ofSetColor(fade(videoColor, alpha));
+      } else {
+        ofSetColor(fade(paletteColor, alpha));
+      }
+      
       if (distanceSquared > 1.0) {
         ofFill();
         ofSetLineWidth(0);
@@ -116,17 +145,6 @@ void Particle::draw() {
       ofDrawLine(position, otherParticle.position);
     }
   }
-  
-  if (Gui::getInstance().drawTrails) {
-    ofFill();
-    ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
-  }
-
-  if (count != 0) {
-    centroid /= count;
-    acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
-    acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;
-  }
-  
+ 
   ofPopView();
 }

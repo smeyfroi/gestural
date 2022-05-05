@@ -42,6 +42,7 @@ public:
   ofParameter<ofColor> backgroundColor;
   ofxToggle colorFromVideo;
   ofxToggle fadeWithAge;
+  ofxToggle fadeWithDistance;
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
   std::string videoPath {""};
