@@ -36,14 +36,15 @@ public:
   ofxIntSlider particleMaxAge;
   ofxFloatSlider particleVelocity;
   ofxFloatSlider particleAcceleration;
-  ofxFloatSlider particleAccelerationDamping;
   ofxFloatSlider particleSpin;
-  ofxIntSlider particleRadius;
+  ofxIntSlider particleInfluence;
+  ofxFloatSlider particleRepulsion;
   ofxIntSlider lineWidth;
   
   ofxGuiGroup colorGroup;
   ofParameter<ofColor> backgroundColor;
   ofxToggle colorFromVideo;
+  ofxFloatSlider intensity;
   ofxToggle fadeWithAge;
   ofxToggle fadeWithDistance;
   ofxInputField<std::string> palette1Url;

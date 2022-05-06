@@ -115,7 +115,8 @@ void drawImage(const ofxCvImage& image) {
 
 void ofApp::draw(){
   ofSetColor(ofColor::white);
-  ofDisableBlendMode();
+  ofEnableAlphaBlending();
+//  ofDisableBlendMode();
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   
   if (Gui::getInstance().showVideo) {

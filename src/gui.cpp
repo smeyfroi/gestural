@@ -23,17 +23,18 @@ Gui::Gui() {
   
   particleGroup.setup("Marks");
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
-  particleGroup.add(particleVelocity.setup("Start speed", 1.0, 0, 10));
-  particleGroup.add(particleAcceleration.setup("Start acceleration", 0.00, 0, 1));
+  particleGroup.add(particleVelocity.setup("Speed", 1.0, 0, 10));
+  particleGroup.add(particleAcceleration.setup("Acceleration", 0.10, 0, 1));
   particleGroup.add(particleSpin.setup("Spin", 0.0, -5.0, 5.0));
   particleGroup.add(lineWidth.setup("Line width", 6, 1, 20));
-  particleGroup.add(particleAccelerationDamping.setup("Damping", 10, 1, 20));
-  particleGroup.add(particleRadius.setup("Influence", 200, 0, 500));
+  particleGroup.add(particleInfluence.setup("Influence", 200, 0, 1000));
+  particleGroup.add(particleRepulsion.setup("Repulsion", 1.0, 0, 10.0));
   panel.add(&particleGroup);
   
   colorGroup.setup("Colours");
   colorGroup.add(backgroundColor.set("Background", ofColor(255, 255), ofColor(0, 255), ofColor(255, 255)));
   colorGroup.add(colorFromVideo.setup("Use video colours", true));
+  colorGroup.add(intensity.setup("Colour intensity", 0.5, 0.0, 1.0));
   colorGroup.add(fadeWithAge.setup("Fade with age", true));
   colorGroup.add(fadeWithDistance.setup("Fade with distance", false));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);

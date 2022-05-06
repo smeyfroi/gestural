@@ -22,7 +22,7 @@ void Particle::updateParticles() {
     particle.update();
   }
   
-  if (ofGetFrameNum() % 30 != 0) return;
+  if (ofGetFrameNum() % 15 != 0) return;
   
   // remove dead particles
   auto it = std::remove_if(particles.begin(), particles.end(), [](Particle& p) { return p.isDead(); });
@@ -45,7 +45,7 @@ position(x, y),
 velocity(Gui::getInstance().particleVelocity, 0.0),
 acceleration(Gui::getInstance().particleAcceleration, 0.0),
 spin(Gui::getInstance().particleSpin),
-radius(Gui::getInstance().particleRadius),
+radius(Gui::getInstance().particleInfluence),
 age(0),
 videoColor(videoColor_),
 paletteColor(paletteColor_)
@@ -69,8 +69,10 @@ void Particle::update() {
   
   if (count != 0) {
     centroid /= count;
-    acceleration += (position-centroid).normalize()/Gui::getInstance().particleAccelerationDamping;
-    acceleration = acceleration.normalize()/Gui::getInstance().particleAccelerationDamping;
+    float distance = (centroid-position).length();
+    float scale = (radius-distance)/radius;
+    acceleration = (acceleration + (position-centroid)*scale*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleAcceleration;
+//    velocity = (velocity + (position-centroid)*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleVelocity;
   }
   
   velocity.rotate(spin);
@@ -85,9 +87,9 @@ bool Particle::isDead() const {
 }
 
 // alpha 0.0-1.0
-ofColor fade(ofColor c, float alpha) {
-  c.a = alpha*255;
-  return c;
+void setMarkColor(ofColor c, float alpha) {
+  c.a = 255.0*alpha*Gui::getInstance().intensity;
+  ofSetColor(c);
 }
 
 void Particle::draw() const {
@@ -112,9 +114,9 @@ void Particle::draw() const {
 
   if (Gui::getInstance().drawTrails) {
     if (Gui::getInstance().colorFromVideo) {
-      ofSetColor(fade(videoColor, alpha));
+      setMarkColor(videoColor, alpha);
     } else {
-      ofSetColor(fade(paletteColor, alpha));
+      setMarkColor(paletteColor, alpha);
     }
     ofFill();
     ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
@@ -130,9 +132,9 @@ void Particle::draw() const {
         alpha *= (1.0-distanceScale);
       }
       if (Gui::getInstance().colorFromVideo) {
-        ofSetColor(fade(videoColor, alpha));
+        setMarkColor(videoColor, alpha);
       } else {
-        ofSetColor(fade(paletteColor, alpha));
+        setMarkColor(paletteColor, alpha);
       }
       
       if (distanceSquared > 1.0) {
