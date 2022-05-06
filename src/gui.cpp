@@ -6,15 +6,20 @@ Gui::Gui() {
   panel.disableHeader();
   panel.setDefaultWidth(300);
   panel.add(performance.setup("", ""));
+
+  videoGroup.setup("Video");
+  loadVideoButton.addListener(this, &Gui::loadVideo);
+  videoGroup.add(loadVideoButton.set("Load video file"));
+  videoGroup.add(showVideo.setup("Show video", true));
+  panel.add(&videoGroup);
   
   panel.add(maxAddedParticles.setup("New marks", 200, 0, 1000));
   panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
-  loadVideoButton.addListener(this, &Gui::loadVideo);
-  panel.add(loadVideoButton.set("Load video file"));
-  panel.add(showVideo.setup("Show video", true));
 
-  panel.add(drawTrails.setup("Draw trails", true));
-  panel.add(drawConnections.setup("Draw connections", false));
+  markTypesGroup.setup("Mark types");
+  markTypesGroup.add(drawTrails.setup("Draw trails", true));
+  markTypesGroup.add(drawConnections.setup("Draw connections", false));
+  panel.add(&markTypesGroup);
   
   particleGroup.setup("Marks");
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
@@ -22,9 +27,6 @@ Gui::Gui() {
   particleGroup.add(particleAcceleration.setup("Start acceleration", 0.00, 0, 1));
   particleGroup.add(particleSpin.setup("Spin", 0.0, -5.0, 5.0));
   particleGroup.add(lineWidth.setup("Line width", 6, 1, 20));
-//  panel.add(&particleGroup);
-  
-  
   particleGroup.add(particleAccelerationDamping.setup("Damping", 10, 1, 20));
   particleGroup.add(particleRadius.setup("Influence", 200, 0, 500));
   panel.add(&particleGroup);

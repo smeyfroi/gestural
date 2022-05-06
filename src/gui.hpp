@@ -21,11 +21,14 @@ public:
   
   ofxLabel performance;
   
-  ofxIntSlider maxAddedParticles;
-  ofxIntSlider fadeDelay;
+  ofxGuiGroup videoGroup;
   ofParameter<void> loadVideoButton;
   ofxToggle showVideo;
+
+  ofxIntSlider maxAddedParticles;
+  ofxIntSlider fadeDelay;
   
+  ofxGuiGroup markTypesGroup;
   ofxToggle drawTrails;
   ofxToggle drawConnections;
   
