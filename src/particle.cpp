@@ -30,10 +30,12 @@ void Particle::updateParticles() {
   particles.erase(it, particles.end());
   
   // rebuild spatial index
-  points.clear();
-  points.reserve(particles.size());
-  std::transform(particles.begin(), particles.end(), std::back_inserter(points), [](Particle& p) -> ofVec2f { return p.position; });
-  Particle::spatialIndexPtr = make_unique<ofx::KDTree<ofVec2f>>(points);
+  if (ofGetFrameRate() > 15) {
+    points.clear();
+    points.reserve(particles.size());
+    std::transform(particles.begin(), particles.end(), std::back_inserter(points), [](Particle& p) -> ofVec2f { return p.position; });
+    Particle::spatialIndexPtr = make_unique<ofx::KDTree<ofVec2f>>(points);
+  }
 }
 
 size_t Particle::particleCount() {

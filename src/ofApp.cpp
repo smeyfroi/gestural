@@ -68,11 +68,13 @@ void ofApp::update(){
       frameDiff.erode_3x3();
     }
     
-    if (frameDiff.bAllocated) {
+    if (frameDiff.bAllocated && ofGetFrameRate() > 15) {
       const auto& pixels = frameDiff.getPixels();
       const float scale = float(pixels.getWidth()) / float(Constants::canvasWidth);
       const auto& framePixels = frame2.getPixels();
-      const float scaleSimpleToFrame = float(framePixels.getWidth()) / float(pixels.getWidth());
+      const float scaleSimpleToFrameW = float(framePixels.getWidth()) / float(pixels.getWidth());
+      const float scaleSimpleToFrameH = float(framePixels.getHeight()) / float(pixels.getHeight());
+      const float scaleSimpleToFrame = std::min(scaleSimpleToFrameH, scaleSimpleToFrameW);
       for (int i=0; i<Gui::getInstance().maxAddedParticles; ++i) {
         size_t x = ofRandom(pixels.getWidth());
         size_t y = ofRandom(pixels.getHeight());
