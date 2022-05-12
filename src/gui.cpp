@@ -73,3 +73,11 @@ void Gui::toggleShow() {
 void Gui::draw() {
   if (show) { panel.draw(); }
 }
+
+void Gui::save() {
+  panel.saveToFile("settings.xml");
+}
+
+void Gui::load() {
+  panel.loadFromFile("settings.xml");
+}

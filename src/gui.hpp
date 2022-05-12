@@ -18,7 +18,9 @@ private:
 public:
   void toggleShow();
   void draw();
-  
+  void save();
+  void load();
+
   ofxLabel performance;
   
   ofxGuiGroup videoGroup;

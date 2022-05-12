@@ -149,6 +149,10 @@ void ofApp::keyPressed(int key){
     ofSaveImage(pixels, ofFilePath::getUserHomeDir()+"/gestural/snapshot-"+ofGetTimestampString()+".png", OF_IMAGE_QUALITY_BEST);
   } else if (key == ' ') {
     Gui::getInstance().toggleShow();
+  } else if(key == '[') {
+    Gui::getInstance().save();
+  } else if(key == ']') {
+    Gui::getInstance().load();
   }
 }
 
