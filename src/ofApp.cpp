@@ -82,7 +82,17 @@ void ofApp::update(){
           ofColor videoColor = framePixels.getColor(x*scaleSimpleToFrame, y*scaleSimpleToFrame);
           float noiseScale = 0.01;
           float noise = ofNoise(x*noiseScale, y*noiseScale, ofGetFrameNum()*noiseScale, 1.0);
-          ofColor paletteColor = ofColor(Gui::getInstance().palette1.getInterpolated(noise));
+          // mix palette 2 with the base video or palette 1 colour
+          ofColor paletteColor;
+          if (Gui::getInstance().colorFromVideo) {
+            paletteColor = videoColor;
+          } else {
+            paletteColor = ofColor(Gui::getInstance().palette1.getInterpolated(noise));
+          }
+          if (Gui::getInstance().mixColorFromPalette2) {
+            ofColor palette2Color = ofColor(Gui::getInstance().palette2.getInterpolated(noise));
+            paletteColor.lerp(palette2Color, 0.5);
+          }
           Particle::makeParticle(x/scale, y/scale, videoColor, paletteColor);
         };
       }

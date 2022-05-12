@@ -23,6 +23,8 @@ public:
   
   ofxGuiGroup videoGroup;
   ofParameter<void> loadVideoButton;
+  std::string videoPath {""};
+  ofEvent<std::string> videoPathChanged;
   ofxToggle showVideo;
 
   ofxIntSlider maxAddedParticles;
@@ -43,18 +45,20 @@ public:
   
   ofxGuiGroup colorGroup;
   ofParameter<ofColor> backgroundColor;
-  ofxToggle colorFromVideo;
   ofxFloatSlider intensity;
   ofxToggle fadeWithAge;
   ofxToggle fadeWithDistance;
+  ofxToggle colorFromVideo;
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
-  std::string videoPath {""};
-  ofEvent<std::string> videoPathChanged;
+  ofxToggle mixColorFromPalette2;
+  ofxInputField<std::string> palette2Url;
+  Palette palette2 {""};
   
 private:
   bool show = true;
   ofxPanel panel;
   void loadVideo();
   void palette1UrlChanged(std::string& url);
+  void palette2UrlChanged(std::string& url);
 };

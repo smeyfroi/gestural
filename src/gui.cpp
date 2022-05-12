@@ -39,6 +39,9 @@ Gui::Gui() {
   colorGroup.add(fadeWithDistance.setup("Fade with distance", false));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
   colorGroup.add(palette1Url.setup("coolors.co URL", "https://coolors.co/palette/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226"));
+  colorGroup.add(mixColorFromPalette2.setup("Mix colour with extra palette", false));
+  palette2Url.addListener(this, &Gui::palette2UrlChanged);
+  colorGroup.add(palette2Url.setup("Extra coolors.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
   panel.add(&colorGroup);
 }
 
@@ -57,6 +60,10 @@ void Gui::loadVideo() {
 
 void Gui::palette1UrlChanged(std::string& url) {
   palette1 = Palette(url);
+}
+
+void Gui::palette2UrlChanged(std::string& url) {
+  palette2 = Palette(url);
 }
 
 void Gui::toggleShow() {
