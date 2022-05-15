@@ -90,8 +90,9 @@ void ofApp::update(){
             paletteColor = ofColor(Gui::getInstance().palette1.getInterpolated(noise));
           }
           if (Gui::getInstance().mixColorFromPalette2) {
+            float noise2 = ofNoise(x*noiseScale, y*noiseScale, ofGetFrameNum()*noiseScale, 10.0);
             ofColor palette2Color = ofColor(Gui::getInstance().palette2.getInterpolated(noise));
-            paletteColor.lerp(palette2Color, 0.5);
+            paletteColor.lerp(palette2Color, noise2);
           }
           Particle::makeParticle(x/scale, y/scale, videoColor, paletteColor);
         };
