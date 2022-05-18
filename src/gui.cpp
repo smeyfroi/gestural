@@ -43,6 +43,15 @@ Gui::Gui() {
   palette2Url.addListener(this, &Gui::palette2UrlChanged);
   colorGroup.add(palette2Url.setup("Extra coolors.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
   panel.add(&colorGroup);
+  
+  disruptionGroup.setup("Disruptions");
+  disruptionGroup.add(disruptionAmount.set("Amount", 0.25, 0.0, 2.0));
+  disruptionGroup.add(disruptAngleAbs.set("Disrupt rotation"));
+  disruptionGroup.add(disruptSpeedAbs.set("Disrupt speed"));
+  disruptionGroup.add(disruptAccelerationAngleAbs.set("Disrupt acceleration direction"));
+  disruptionGroup.add(disruptSpinAbs.set("Disrupt spin"));
+  disruptionGroup.add(disruptRadiusAbs.set("Disrupt influence"));
+  panel.add(&disruptionGroup);
 }
 
 void Gui::loadVideo() {

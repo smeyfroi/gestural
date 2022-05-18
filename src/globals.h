@@ -10,3 +10,11 @@ namespace Constants {
   const size_t videoGrabWidth = 640;
   const size_t videoGrabHeight = 480;
 }
+
+enum class ParticleDisruption {
+  angleAbs,
+  speedAbs,
+  accelerationAngleAbs,
+  spinAbs,
+  radiusAbs,
+};

@@ -42,6 +42,13 @@ size_t Particle::particleCount() {
   return particles.size();
 }
 
+// amount is 0.0-1.0
+void Particle::disruptParticles(ParticleDisruption disruption, float amount) {
+  for (auto& particle : particles) {
+    particle.disrupt(disruption, amount);
+  }
+}
+
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
 position(x, y),
 velocity(Gui::getInstance().particleVelocity, 0.0),
@@ -69,12 +76,11 @@ void Particle::update() {
     ++count;
   }
   
-  if (count != 0) {
+  if (count != 0 && radius > 1.0) {
     centroid /= count;
     float distance = (centroid-position).length();
     float scale = (radius-distance)/radius;
     acceleration = (acceleration + (position-centroid)*scale*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleAcceleration;
-//    velocity = (velocity + (position-centroid)*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleVelocity;
   }
   
   velocity.rotate(spin);
@@ -124,7 +130,7 @@ void Particle::draw() const {
     ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
   }
   
-  if (Gui::getInstance().drawConnections) {
+  if (Gui::getInstance().drawConnections && searchRadius > 1.0) {
     for (const auto& searchResult: searchResults) {
       const Particle& otherParticle = particles[searchResult.first];
       if (position == otherParticle.position) continue;
@@ -151,4 +157,34 @@ void Particle::draw() const {
   }
  
   ofPopView();
+}
+
+// amount is 0.0-1.0
+void Particle::disrupt(ParticleDisruption disruption, float amount) {
+  switch(disruption) {
+    case ParticleDisruption::angleAbs: {
+      ofVec2f target = ofVec2f(velocity.length(), 0).getRotated(amount*360.0);
+      velocity = velocity.getInterpolated(target, 0.5);
+      break;
+    }
+    case ParticleDisruption::speedAbs: {
+      velocity *= amount;
+      break;
+    }
+    case ParticleDisruption::accelerationAngleAbs: {
+      ofVec2f target = ofVec2f(acceleration.length(), 0).getRotated(amount*360.0);
+      acceleration = acceleration.getInterpolated(target, 0.5);
+      break;
+    }
+    case ParticleDisruption::spinAbs: {
+      spin *= amount;
+      break;
+    }
+    case ParticleDisruption::radiusAbs: {
+      radius *= amount;
+      break;
+    }
+    default:
+      break;
+  }
 }

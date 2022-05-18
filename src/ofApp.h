@@ -13,6 +13,7 @@ class ofApp : public ofBaseApp{
     void videoFilePathChanged(std::string&);
 		void update();
 		void draw();
+    void disruptedRotationAbs();
 
 		void keyPressed(int key);
 		void keyReleased(int key);

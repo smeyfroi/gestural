@@ -25,6 +25,7 @@ void ofApp::setup(){
   backgroundColorChanged(c);
   
   ofAddListener(Gui::getInstance().videoPathChanged, this, &ofApp::videoFilePathChanged);
+  Gui::getInstance().disruptAngleAbs.addListener(this, &ofApp::disruptedRotationAbs);
 }
 
 void ofApp::backgroundColorChanged(ofColor& c) {
@@ -39,6 +40,10 @@ void ofApp::videoFilePathChanged(string& path) {
   video.load(path);
   video.setVolume(0);
   video.play();
+}
+
+void ofApp::disruptedRotationAbs() {
+  Particle::disruptParticles(ParticleDisruption::angleAbs, Gui::getInstance().disruptionAmount);
 }
 
 //--------------------------------------------------------------
@@ -83,18 +88,18 @@ void ofApp::update(){
           float noiseScale = 0.01;
           float noise = ofNoise(x*noiseScale, y*noiseScale, ofGetFrameNum()*noiseScale, 1.0);
           // mix palette 2 with the base video or palette 1 colour
-          ofColor paletteColor;
+          ofColor particleColor;
           if (Gui::getInstance().colorFromVideo) {
-            paletteColor = videoColor;
+            particleColor = videoColor;
           } else {
-            paletteColor = ofColor(Gui::getInstance().palette1.getInterpolated(noise));
+            particleColor = ofColor(Gui::getInstance().palette1.getInterpolated(noise));
           }
           if (Gui::getInstance().mixColorFromPalette2) {
             float noise2 = ofNoise(x*noiseScale, y*noiseScale, ofGetFrameNum()*noiseScale, 10.0);
             ofColor palette2Color = ofColor(Gui::getInstance().palette2.getInterpolated(noise));
-            paletteColor.lerp(palette2Color, noise2);
+            particleColor.lerp(palette2Color, noise2);
           }
-          Particle::makeParticle(x/scale, y/scale, videoColor, paletteColor);
+          Particle::makeParticle(x/scale, y/scale, videoColor, particleColor);
         };
       }
     }

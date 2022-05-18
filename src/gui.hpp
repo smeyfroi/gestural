@@ -57,6 +57,14 @@ public:
   ofxInputField<std::string> palette2Url;
   Palette palette2 {""};
   
+  ofxGuiGroup disruptionGroup;
+  ofParameter<float> disruptionAmount;
+  ofParameter<void> disruptAngleAbs;
+  ofParameter<void> disruptSpeedAbs;
+  ofParameter<void> disruptAccelerationAngleAbs;
+  ofParameter<void> disruptSpinAbs;
+  ofParameter<void> disruptRadiusAbs;
+  
 private:
   bool show = true;
   ofxPanel panel;

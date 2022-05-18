@@ -5,6 +5,7 @@
 #include <memory.h>
 #include "ofxSpatialHash.h"
 #include "ofColor.h"
+#include "globals.h"
 
 class Particle {
 public:
@@ -12,10 +13,12 @@ public:
   static void drawParticles();
   static void updateParticles();
   static size_t particleCount();
+  static void disruptParticles(ParticleDisruption disruption, float amount);
   Particle(float x, float y, ofColor videoColor, ofColor paletteColor);
   void update();
   bool isDead() const;
   void draw() const;
+  void disrupt(ParticleDisruption, float);
   
 private:
   static std::vector<Particle> particles;
