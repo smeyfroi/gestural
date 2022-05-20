@@ -46,7 +46,7 @@ Gui::Gui() {
   
   disruptionGroup.setup("Disruptions");
   disruptionGroup.add(disruptionAmount.set("Amount", 0.50, 0.0, 1.0));
-  disruptionGroup.add(disruptionVariation.set("Amount", 0.25, 0.0, 1.0));
+  disruptionGroup.add(disruptionVariation.set("Variation", 0.25, 0.0, 1.0));
   disruptionGroup.add(disruptAngle.set("Disrupt rotation"));
   disruptionGroup.add(disruptSpeed.set("Disrupt speed"));
   disruptionGroup.add(disruptAccelerationAngle.set("Disrupt acceleration direction"));
