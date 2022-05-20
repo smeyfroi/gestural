@@ -12,6 +12,8 @@ void ofApp::setup(){
   
   ofSeedRandom();
   
+  paused = false;
+  
 #ifdef USE_CAMERA
   video.initGrabber(Constants::videoGrabWidth, Constants::videoGrabHeight);
 #else
@@ -67,6 +69,8 @@ void ofApp::disruptedRadius() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+  if (paused) return;
+  
   video.update();
   
   if (video.isFrameNew()) {
@@ -128,15 +132,15 @@ void ofApp::update(){
   
   fbo.begin();
   
-  if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
-//    ofColor c = Gui::getInstance().backgroundColor;
-//    c.a = 8;
-    ofColor c(0, 0, 0, 8);
-    ofSetColor(c);
-    ofEnableAlphaBlending();
-    ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
-    ofClearAlpha();
-  }
+//  if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
+////    ofColor c = Gui::getInstance().backgroundColor;
+////    c.a = 8;
+//    ofColor c(0, 0, 0, 8);
+//    ofSetColor(c);
+//    ofEnableAlphaBlending();
+//    ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
+//    ofClearAlpha();
+//  }
 
   ofBlendMode(OF_BLENDMODE_MULTIPLY);
   Particle::drawParticles();
@@ -174,13 +178,18 @@ void ofApp::keyPressed(int key){
     ofPixels pixels;
     fbo.readToPixels(pixels);
     ofSaveImage(pixels, ofFilePath::getUserHomeDir()+"/gestural/snapshot-"+ofGetTimestampString()+".png", OF_IMAGE_QUALITY_BEST);
-  } else if (key == ' ') {
+  } else if (key == 'g') {
     Gui::getInstance().toggleShow();
   } else if(key == '[') {
     Gui::getInstance().save();
   } else if(key == ']') {
     Gui::getInstance().load();
-  }
+  } else if (key == ' ') {
+    paused = !paused;
+#ifndef USE_CAMERA
+    video.setPaused(paused);
+#endif
+ }
 }
 
 //--------------------------------------------------------------

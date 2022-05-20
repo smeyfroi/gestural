@@ -42,4 +42,5 @@ private:
   ofxCvGrayscaleImage frameDiff;
   ofFbo fbo;
   ofEventListener backgroundColorChangeListener;
+  bool paused;
 };
