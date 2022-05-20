@@ -9,11 +9,15 @@ class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
-    void backgroundColorChanged(ofColor&);
-    void videoFilePathChanged(std::string&);
+        void backgroundColorChanged(ofColor&);
+        void videoFilePathChanged(std::string&);
 		void update();
 		void draw();
-    void disruptedRotationAbs();
+        void disruptedAngle();
+        void disruptedSpeed();
+        void disruptedAccelerationAngle();
+        void disruptedSpin();
+        void disruptedRadius();
 
 		void keyPressed(int key);
 		void keyReleased(int key);

@@ -43,9 +43,9 @@ size_t Particle::particleCount() {
 }
 
 // amount is 0.0-1.0
-void Particle::disruptParticles(ParticleDisruption disruption, float amount) {
+void Particle::disruptParticles(ParticleDisruption disruption, float amount, float variation) {
   for (auto& particle : particles) {
-    particle.disrupt(disruption, amount);
+    particle.disrupt(disruption, amount, variation);
   }
 }
 
@@ -160,27 +160,28 @@ void Particle::draw() const {
 }
 
 // amount is 0.0-1.0
-void Particle::disrupt(ParticleDisruption disruption, float amount) {
+void Particle::disrupt(ParticleDisruption disruption, float amount, float variation) {
+  float randomizedAmount = (amount+ofRandom(variation)) - (amount+variation)/2.0;
   switch(disruption) {
-    case ParticleDisruption::angleAbs: {
-      ofVec2f target = ofVec2f(velocity.length(), 0).getRotated(amount*360.0);
+    case ParticleDisruption::angle: {
+      ofVec2f target = ofVec2f(velocity.length(), 0).getRotated(randomizedAmount*360.0);
       velocity = velocity.getInterpolated(target, 0.5);
       break;
     }
-    case ParticleDisruption::speedAbs: {
-      velocity *= amount;
+    case ParticleDisruption::speed: {
+      velocity *= randomizedAmount * 2.0;
       break;
     }
-    case ParticleDisruption::accelerationAngleAbs: {
-      ofVec2f target = ofVec2f(acceleration.length(), 0).getRotated(amount*360.0);
+    case ParticleDisruption::accelerationAngle: {
+      ofVec2f target = ofVec2f(acceleration.length(), 0).getRotated(randomizedAmount*360.0);
       acceleration = acceleration.getInterpolated(target, 0.5);
       break;
     }
-    case ParticleDisruption::spinAbs: {
+    case ParticleDisruption::spin: {
       spin *= amount;
       break;
     }
-    case ParticleDisruption::radiusAbs: {
+    case ParticleDisruption::radius: {
       radius *= amount;
       break;
     }

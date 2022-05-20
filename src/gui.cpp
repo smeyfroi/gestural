@@ -7,15 +7,15 @@ Gui::Gui() {
   panel.setDefaultWidth(300);
   panel.add(performance.setup("", ""));
 
+  panel.add(maxAddedParticles.setup("New marks", 300, 0, 1000));
+  panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
+
   videoGroup.setup("Video");
   loadVideoButton.addListener(this, &Gui::loadVideo);
   videoGroup.add(loadVideoButton.set("Load video file"));
   videoGroup.add(showVideo.setup("Show video", true));
   panel.add(&videoGroup);
   
-  panel.add(maxAddedParticles.setup("New marks", 200, 0, 1000));
-  panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
-
   markTypesGroup.setup("Mark types");
   markTypesGroup.add(drawTrails.setup("Draw trails", true));
   markTypesGroup.add(drawConnections.setup("Draw connections", false));
@@ -39,18 +39,19 @@ Gui::Gui() {
   colorGroup.add(fadeWithDistance.setup("Fade with distance", false));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
   colorGroup.add(palette1Url.setup("coolors.co URL", "https://coolors.co/palette/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226"));
-  colorGroup.add(mixColorFromPalette2.setup("Mix colour with extra palette", false));
+  colorGroup.add(mixColorFromPalette2.setup("Mix colour with 2y", false));
   palette2Url.addListener(this, &Gui::palette2UrlChanged);
-  colorGroup.add(palette2Url.setup("Extra coolors.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
+  colorGroup.add(palette2Url.setup("2y coolors.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
   panel.add(&colorGroup);
   
   disruptionGroup.setup("Disruptions");
-  disruptionGroup.add(disruptionAmount.set("Amount", 0.25, 0.0, 2.0));
-  disruptionGroup.add(disruptAngleAbs.set("Disrupt rotation"));
-  disruptionGroup.add(disruptSpeedAbs.set("Disrupt speed"));
-  disruptionGroup.add(disruptAccelerationAngleAbs.set("Disrupt acceleration direction"));
-  disruptionGroup.add(disruptSpinAbs.set("Disrupt spin"));
-  disruptionGroup.add(disruptRadiusAbs.set("Disrupt influence"));
+  disruptionGroup.add(disruptionAmount.set("Amount", 0.50, 0.0, 1.0));
+  disruptionGroup.add(disruptionVariation.set("Amount", 0.25, 0.0, 1.0));
+  disruptionGroup.add(disruptAngle.set("Disrupt rotation"));
+  disruptionGroup.add(disruptSpeed.set("Disrupt speed"));
+  disruptionGroup.add(disruptAccelerationAngle.set("Disrupt acceleration direction"));
+  disruptionGroup.add(disruptSpin.set("Disrupt spin"));
+  disruptionGroup.add(disruptRadius.set("Disrupt influence"));
   panel.add(&disruptionGroup);
 }
 

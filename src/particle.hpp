@@ -13,13 +13,13 @@ public:
   static void drawParticles();
   static void updateParticles();
   static size_t particleCount();
-  static void disruptParticles(ParticleDisruption disruption, float amount);
+  static void disruptParticles(ParticleDisruption disruption, float amount, float variation);
   Particle(float x, float y, ofColor videoColor, ofColor paletteColor);
   void update();
   bool isDead() const;
   void draw() const;
-  void disrupt(ParticleDisruption, float);
-  
+  void disrupt(ParticleDisruption disruption, float amount, float variation);
+
 private:
   static std::vector<Particle> particles;
   static std::vector<ofVec2f> points;

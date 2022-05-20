@@ -23,15 +23,15 @@ public:
 
   ofxLabel performance;
   
+  ofxIntSlider maxAddedParticles;
+  ofxIntSlider fadeDelay;
+  
   ofxGuiGroup videoGroup;
   ofParameter<void> loadVideoButton;
   std::string videoPath {""};
   ofEvent<std::string> videoPathChanged;
   ofxToggle showVideo;
 
-  ofxIntSlider maxAddedParticles;
-  ofxIntSlider fadeDelay;
-  
   ofxGuiGroup markTypesGroup;
   ofxToggle drawTrails;
   ofxToggle drawConnections;
@@ -57,13 +57,15 @@ public:
   ofxInputField<std::string> palette2Url;
   Palette palette2 {""};
   
+  // Instantanous disruptions of existing particles
   ofxGuiGroup disruptionGroup;
-  ofParameter<float> disruptionAmount;
-  ofParameter<void> disruptAngleAbs;
-  ofParameter<void> disruptSpeedAbs;
-  ofParameter<void> disruptAccelerationAngleAbs;
-  ofParameter<void> disruptSpinAbs;
-  ofParameter<void> disruptRadiusAbs;
+  ofParameter<float> disruptionAmount; // 0-1, per disruption semantics
+  ofParameter<float> disruptionVariation; // 0-1, applied to raw amount, per disruption semantics
+  ofParameter<void> disruptAngle;
+  ofParameter<void> disruptSpeed;
+  ofParameter<void> disruptAccelerationAngle;
+  ofParameter<void> disruptSpin;
+  ofParameter<void> disruptRadius;
   
 private:
   bool show = true;

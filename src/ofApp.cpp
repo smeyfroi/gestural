@@ -25,7 +25,11 @@ void ofApp::setup(){
   backgroundColorChanged(c);
   
   ofAddListener(Gui::getInstance().videoPathChanged, this, &ofApp::videoFilePathChanged);
-  Gui::getInstance().disruptAngleAbs.addListener(this, &ofApp::disruptedRotationAbs);
+  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedAngle);
+  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedSpeed);
+  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedAccelerationAngle);
+  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedSpin);
+  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedRadius);
 }
 
 void ofApp::backgroundColorChanged(ofColor& c) {
@@ -42,8 +46,24 @@ void ofApp::videoFilePathChanged(string& path) {
   video.play();
 }
 
-void ofApp::disruptedRotationAbs() {
-  Particle::disruptParticles(ParticleDisruption::angleAbs, Gui::getInstance().disruptionAmount);
+void ofApp::disruptedAngle() {
+  Particle::disruptParticles(ParticleDisruption::angle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
+void ofApp::disruptedSpeed() {
+  Particle::disruptParticles(ParticleDisruption::speed, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
+void ofApp::disruptedAccelerationAngle() {
+  Particle::disruptParticles(ParticleDisruption::accelerationAngle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
+void ofApp::disruptedSpin() {
+  Particle::disruptParticles(ParticleDisruption::spin, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
+void ofApp::disruptedRadius() {
+  Particle::disruptParticles(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
 }
 
 //--------------------------------------------------------------
