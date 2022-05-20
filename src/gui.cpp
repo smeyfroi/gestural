@@ -38,10 +38,10 @@ Gui::Gui() {
   colorGroup.add(fadeWithAge.setup("Fade with age", true));
   colorGroup.add(fadeWithDistance.setup("Fade with distance", false));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
-  colorGroup.add(palette1Url.setup("coolors.co URL", "https://coolors.co/palette/001219-005f73-0a9396-94d2bd-e9d8a6-ee9b00-ca6702-bb3e03-ae2012-9b2226"));
+  colorGroup.add(palette1Url.setup("coolors.co URL", "https://coolors.co/palette/8ecae6-219ebc-023047-ffb703-fb8500"));
   colorGroup.add(mixColorFromPalette2.setup("Mix colour with 2y", false));
   palette2Url.addListener(this, &Gui::palette2UrlChanged);
-  colorGroup.add(palette2Url.setup("2y coolors.co URL", "https://coolors.co/palette/0d3b66-faf0ca-f4d35e-ee964b-f95738"));
+  colorGroup.add(palette2Url.setup("2y coolors.co URL", "https://coolors.co/palette/dad7cd-a3b18a-588157-3a5a40-344e41"));
   panel.add(&colorGroup);
   
   disruptionGroup.setup("Disruptions");

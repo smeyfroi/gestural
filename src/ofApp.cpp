@@ -33,10 +33,9 @@ void ofApp::setup(){
 }
 
 void ofApp::backgroundColorChanged(ofColor& c) {
-  fbo.clear();
-  fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGB);
+  fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGBA);
   fbo.begin();
-  ofBackground(Gui::getInstance().backgroundColor);
+  ofClear(0);
   fbo.end();
 }
 
@@ -130,8 +129,9 @@ void ofApp::update(){
   fbo.begin();
   
   if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
-    ofColor c = Gui::getInstance().backgroundColor;
-    c.a = 8;
+//    ofColor c = Gui::getInstance().backgroundColor;
+//    c.a = 8;
+    ofColor c(0, 0, 0, 8);
     ofSetColor(c);
     ofEnableAlphaBlending();
     ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
@@ -140,6 +140,7 @@ void ofApp::update(){
 
   ofBlendMode(OF_BLENDMODE_MULTIPLY);
   Particle::drawParticles();
+  
   fbo.end();
 }
 
@@ -152,9 +153,9 @@ void drawImage(const ofxCvImage& image) {
 }
 
 void ofApp::draw(){
+  ofBackground(Gui::getInstance().backgroundColor);
+  
   ofSetColor(ofColor::white);
-  ofEnableAlphaBlending();
-//  ofDisableBlendMode();
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
   
   if (Gui::getInstance().showVideo) {

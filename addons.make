@@ -1,5 +1,3 @@
-ofxAudioAnalyzer
-ofxAudioDecoder
 ofxGui
 ofxOpenCv
 ofxSpatialHash
