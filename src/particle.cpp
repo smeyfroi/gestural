@@ -164,17 +164,15 @@ void Particle::disrupt(ParticleDisruption disruption, float amount, float variat
   float randomizedAmount = (amount+ofRandom(variation)) - (amount+variation)/2.0;
   switch(disruption) {
     case ParticleDisruption::angle: {
-      ofVec2f target = ofVec2f(velocity.length(), 0).getRotated(randomizedAmount*360.0);
-      velocity = velocity.getInterpolated(target, 0.5);
+      velocity.rotate(randomizedAmount*360.0);
       break;
     }
     case ParticleDisruption::speed: {
-      velocity *= randomizedAmount * 2.0;
+      velocity *= randomizedAmount * 5.0;
       break;
     }
     case ParticleDisruption::accelerationAngle: {
-      ofVec2f target = ofVec2f(acceleration.length(), 0).getRotated(randomizedAmount*360.0);
-      acceleration = acceleration.getInterpolated(target, 0.5);
+      acceleration.rotate(randomizedAmount*360.0);
       break;
     }
     case ParticleDisruption::spin: {
