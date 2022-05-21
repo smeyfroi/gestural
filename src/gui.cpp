@@ -34,7 +34,7 @@ Gui::Gui() {
   colorGroup.setup("Colours");
   colorGroup.add(backgroundColor.set("Background", ofColor(255, 255), ofColor(0, 255), ofColor(255, 255)));
   colorGroup.add(colorFromVideo.setup("Use video colours", true));
-  colorGroup.add(intensity.setup("Colour intensity", 0.5, 0.0, 1.0));
+  colorGroup.add(intensity.setup("Colour intensity", 1.0, 0.0, 1.0));
   colorGroup.add(fadeWithAge.setup("Fade with age", true));
   colorGroup.add(fadeWithDistance.setup("Fade with distance", false));
   palette1Url.addListener(this, &Gui::palette1UrlChanged);
