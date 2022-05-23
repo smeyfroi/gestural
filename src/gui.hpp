@@ -23,8 +23,14 @@ public:
 
   ofxLabel performance;
   
-  ofxIntSlider maxAddedParticles;
-  ofxIntSlider fadeDelay;
+  ofxGuiGroup keysGroup;
+  ofxLabel sKey;
+  ofxLabel gKey;
+  ofxLabel rsqbrKey;
+  ofxLabel lsqbrKey;
+  ofxLabel spaceKey;
+  ofxLabel dotKey;
+  ofxLabel fKey;
   
   ofxGuiGroup videoGroup;
   ofParameter<void> loadVideoButton;
@@ -33,6 +39,7 @@ public:
   ofxToggle showVideo;
 
   ofxGuiGroup markTypesGroup;
+  ofxIntSlider maxAddedParticles;
   ofxToggle drawTrails;
   ofxToggle drawConnections;
   
@@ -61,11 +68,11 @@ public:
   ofxGuiGroup disruptionGroup;
   ofParameter<float> disruptionAmount; // 0-1, per disruption semantics
   ofParameter<float> disruptionVariation; // 0-1, applied to raw amount, per disruption semantics
-  ofParameter<void> disruptAngle;
-  ofParameter<void> disruptSpeed;
-  ofParameter<void> disruptAccelerationAngle;
-  ofParameter<void> disruptSpin;
-  ofParameter<void> disruptRadius;
+  ofParameter<void> disruptCurrent;
+  ofParameter<void> disruptAdd;
+  ofParameter<void> disruptReduce;
+  
+  ofxIntSlider fadeAmount;
   
 private:
   bool show = true;

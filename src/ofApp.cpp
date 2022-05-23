@@ -7,6 +7,15 @@
 #include "palette.hpp"
 
 //--------------------------------------------------------------
+ofFbo createFbo() {
+  ofFbo fbo;
+  fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGBA);
+  fbo.begin();
+  ofClear(255, 255, 255, 0);
+  fbo.end();
+  return fbo;
+}
+
 void ofApp::setup(){
   ofSetFrameRate(30);
   
@@ -27,18 +36,15 @@ void ofApp::setup(){
   backgroundColorChanged(c);
   
   ofAddListener(Gui::getInstance().videoPathChanged, this, &ofApp::videoFilePathChanged);
-  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedAngle);
-  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedSpeed);
-  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedAccelerationAngle);
-  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedSpin);
-  Gui::getInstance().disruptAngle.addListener(this, &ofApp::disruptedRadius);
+  Gui::getInstance().disruptCurrent.addListener(this, &ofApp::disruptedCurrent);
+  Gui::getInstance().disruptAdd.addListener(this, &ofApp::disruptedAdd);
+  Gui::getInstance().disruptReduce.addListener(this, &ofApp::disruptedReduce);
+  
+  activeFbo = createFbo();
+  savedFbo = createFbo();
 }
 
 void ofApp::backgroundColorChanged(ofColor& c) {
-  fbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGBA);
-  fbo.begin();
-  ofClear(0);
-  fbo.end();
 }
 
 void ofApp::videoFilePathChanged(string& path) {
@@ -47,24 +53,20 @@ void ofApp::videoFilePathChanged(string& path) {
   video.play();
 }
 
-void ofApp::disruptedAngle() {
+void ofApp::disruptedCurrent() {
   Particle::disruptParticles(ParticleDisruption::angle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-}
-
-void ofApp::disruptedSpeed() {
   Particle::disruptParticles(ParticleDisruption::speed, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-}
-
-void ofApp::disruptedAccelerationAngle() {
   Particle::disruptParticles(ParticleDisruption::accelerationAngle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-}
-
-void ofApp::disruptedSpin() {
   Particle::disruptParticles(ParticleDisruption::spin, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  Particle::disruptParticles(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
 }
 
-void ofApp::disruptedRadius() {
-  Particle::disruptParticles(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+void ofApp::disruptedAdd() {
+  Particle::add(Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
+void ofApp::disruptedReduce() {
+  Particle::reduce(Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
 }
 
 //--------------------------------------------------------------
@@ -130,53 +132,69 @@ void ofApp::update(){
   
   Particle::updateParticles();
   
-  fbo.begin();
-  
-//  if (ofGetFrameNum() % Gui::getInstance().fadeDelay == 0) {
-////    ofColor c = Gui::getInstance().backgroundColor;
-////    c.a = 8;
-//    ofColor c(0, 0, 0, 8);
-//    ofSetColor(c);
-//    ofEnableAlphaBlending();
-//    ofDrawRectangle(0, 0, Constants::canvasWidth, Constants::canvasHeight);
-//    ofClearAlpha();
-//  }
-
-  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+  activeFbo.begin();
   Particle::drawParticles();
-  
-  fbo.end();
+  activeFbo.end();
 }
 
 //--------------------------------------------------------------
-void drawImage(const ofxCvImage& image) {
+void drawGhostImage(const ofxCvImage& image) {
   if (image.bAllocated) {
+    ofEnableAlphaBlending();
     ofSetColor(255, 255, 255, 64);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+    ofDisableAlphaBlending();
   }
 }
 
-void ofApp::draw(){
-  ofBackground(Gui::getInstance().backgroundColor);
-  
+void drawFbo(ofFbo& fbo) {
+  ofClear(Gui::getInstance().backgroundColor);
   ofSetColor(ofColor::white);
+  ofEnableAlphaBlending();
+  ofBlendMode(OF_BLENDMODE_MULTIPLY);
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+  ofDisableAlphaBlending();
+}
+
+void ofApp::drawComposite(int w, int h) {
+  ofClear(Gui::getInstance().backgroundColor);
+  ofSetColor(ofColor::white);
+  ofEnableAlphaBlending();
+  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+  savedFbo.draw(0, 0, w, h);
+  activeFbo.draw(0, 0, w, h);
+  ofDisableAlphaBlending();
+}
+
+void ofApp::draw(){
+  if (show==1) drawFbo(activeFbo);
+  else if (show==2) drawFbo(savedFbo);
+  else {
+    drawComposite(ofGetWindowWidth(), ofGetWindowHeight());
+  }
   
   if (Gui::getInstance().showVideo) {
-    ofEnableAlphaBlending();
-    drawImage(simpleFrame1);
+    drawGhostImage(simpleFrame1);
   }
   
   Gui::getInstance().performance =  "FPS: "+ofToString(int(ofGetFrameRate())) + " Marks: "+ofToString(Particle::particleCount());
-  
   Gui::getInstance().draw();
 }
 
 //--------------------------------------------------------------
+ofFbo ofApp::makeComposite() {
+  ofFbo compositeFbo;
+  compositeFbo.allocate(Constants::canvasWidth, Constants::canvasHeight, GL_RGB);
+  compositeFbo.begin();
+  drawComposite(Constants::canvasWidth, Constants::canvasHeight);
+  compositeFbo.end();
+  return compositeFbo;
+}
+
 void ofApp::keyPressed(int key){
   if (key == 's') {
     ofPixels pixels;
-    fbo.readToPixels(pixels);
+    makeComposite().readToPixels(pixels);
     ofSaveImage(pixels, ofFilePath::getUserHomeDir()+"/gestural/snapshot-"+ofGetTimestampString()+".png", OF_IMAGE_QUALITY_BEST);
   } else if (key == 'g') {
     Gui::getInstance().toggleShow();
@@ -189,7 +207,29 @@ void ofApp::keyPressed(int key){
 #ifndef USE_CAMERA
     video.setPaused(paused);
 #endif
- }
+  } else if (key == '.') {
+    savedFbo.begin();
+    ofSetColor(ofColor::white);
+    ofEnableAlphaBlending();
+    ofBlendMode(OF_BLENDMODE_ALPHA);
+    activeFbo.draw(0, 0);
+    ofDisableAlphaBlending();
+    savedFbo.end();
+    activeFbo.begin();
+    ofClear(255, 255, 255, 0);
+    activeFbo.end();
+  } else if (key == 'f') {
+    ofFbo fadedFbo = createFbo();
+    fadedFbo.begin();
+    ofSetColor(255, 255, 255, 255-Gui::getInstance().fadeAmount);
+    savedFbo.draw(0, 0);
+    fadedFbo.end();
+    savedFbo = fadedFbo;
+  }
+  // debug
+  if(key=='1') show=1;
+  else if (key=='2') show=2;
+  else if (key=='0') show=0;
 }
 
 //--------------------------------------------------------------

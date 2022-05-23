@@ -49,6 +49,31 @@ void Particle::disruptParticles(ParticleDisruption disruption, float amount, flo
   }
 }
 
+float createRandomizedAmount(float amount, float variation) {
+  return (amount+ofRandom(variation)) - (amount+variation)/2.0;
+}
+
+void Particle::add(float amount, float variation) {
+  float num = createRandomizedAmount(amount, variation) * particles.size();
+  std::set<size_t> chosenIndexes;
+  for (int i=0; i<num || chosenIndexes.size()==particles.size(); ++i) {
+    chosenIndexes.insert(ofRandom(chosenIndexes.size()));
+  }
+  for (const auto& i: chosenIndexes) {
+    Particle p = particles[i];
+    p.disrupt(Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+    particles.push_back(p);
+  }
+}
+
+void Particle::reduce(float amount, float variation) {
+  float num = createRandomizedAmount(amount, variation);
+  float probability = std::min(1.0f, num);
+  auto it = std::remove_if(particles.begin(), particles.end(), [=](Particle& p) { return ofRandomf() < probability; });
+  auto r = std::distance(it, particles.end());
+  particles.erase(it, particles.end());
+}
+
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
 position(x, y),
 velocity(Gui::getInstance().particleVelocity, 0.0),
@@ -159,9 +184,17 @@ void Particle::draw() const {
   ofPopView();
 }
 
+void Particle::disrupt(float amount, float variation) {
+  disrupt(ParticleDisruption::angle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  disrupt(ParticleDisruption::speed, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  disrupt(ParticleDisruption::accelerationAngle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  disrupt(ParticleDisruption::spin, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  disrupt(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+}
+
 // amount is 0.0-1.0
 void Particle::disrupt(ParticleDisruption disruption, float amount, float variation) {
-  float randomizedAmount = (amount+ofRandom(variation)) - (amount+variation)/2.0;
+  float randomizedAmount = createRandomizedAmount(amount, variation);
   switch(disruption) {
     case ParticleDisruption::angle: {
       velocity.rotate(randomizedAmount*360.0);

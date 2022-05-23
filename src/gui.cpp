@@ -6,9 +6,16 @@ Gui::Gui() {
   panel.disableHeader();
   panel.setDefaultWidth(300);
   panel.add(performance.setup("", ""));
-
-  panel.add(maxAddedParticles.setup("New marks", 300, 0, 1000));
-  panel.add(fadeDelay.setup("Fade delay", 10, 1, 100));
+  
+  keysGroup.setup("Keys");
+  keysGroup.add(sKey.setup("s", "Save image"));
+  keysGroup.add(gKey.setup("g", "Toggle controls"));
+  keysGroup.add(rsqbrKey.setup("[", "Save control settings"));
+  keysGroup.add(lsqbrKey.setup("]", "Load control settings"));
+  keysGroup.add(spaceKey.setup("space", "Pause drawing"));
+  keysGroup.add(dotKey.setup(".", "Add permanent"));
+  keysGroup.add(fKey.setup("f", "Fade permanent"));
+  panel.add(&keysGroup);
 
   videoGroup.setup("Video");
   loadVideoButton.addListener(this, &Gui::loadVideo);
@@ -17,6 +24,7 @@ Gui::Gui() {
   panel.add(&videoGroup);
   
   markTypesGroup.setup("Mark types");
+  markTypesGroup.add(maxAddedParticles.setup("New marks", 300, 0, 1000));
   markTypesGroup.add(drawTrails.setup("Draw trails", true));
   markTypesGroup.add(drawConnections.setup("Draw connections", false));
   panel.add(&markTypesGroup);
@@ -47,12 +55,12 @@ Gui::Gui() {
   disruptionGroup.setup("Disruptions");
   disruptionGroup.add(disruptionAmount.set("Amount", 0.50, 0.0, 1.0));
   disruptionGroup.add(disruptionVariation.set("Variation", 0.25, 0.0, 1.0));
-  disruptionGroup.add(disruptAngle.set("Disrupt rotation"));
-  disruptionGroup.add(disruptSpeed.set("Disrupt speed"));
-  disruptionGroup.add(disruptAccelerationAngle.set("Disrupt acceleration direction"));
-  disruptionGroup.add(disruptSpin.set("Disrupt spin"));
-  disruptionGroup.add(disruptRadius.set("Disrupt influence"));
+  disruptionGroup.add(disruptCurrent.set("Disrupt"));
+  disruptionGroup.add(disruptAdd.set("Add"));
+  disruptionGroup.add(disruptReduce.set("Reduce"));
   panel.add(&disruptionGroup);
+
+  panel.add(fadeAmount.setup("Fade amount", 32, 4, 128));
 }
 
 void Gui::loadVideo() {

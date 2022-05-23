@@ -7,29 +7,27 @@
 
 class ofApp : public ofBaseApp{
 
-	public:
-		void setup();
-        void backgroundColorChanged(ofColor&);
-        void videoFilePathChanged(std::string&);
-		void update();
-		void draw();
-        void disruptedAngle();
-        void disruptedSpeed();
-        void disruptedAccelerationAngle();
-        void disruptedSpin();
-        void disruptedRadius();
-
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
+public:
+  void setup();
+  void backgroundColorChanged(ofColor&);
+  void videoFilePathChanged(std::string&);
+  void update();
+  void draw();
+  void disruptedCurrent();
+  void disruptedAdd();
+  void disruptedReduce();
+  
+  void keyPressed(int key);
+  void keyReleased(int key);
+  void mouseMoved(int x, int y );
+  void mouseDragged(int x, int y, int button);
+  void mousePressed(int x, int y, int button);
+  void mouseReleased(int x, int y, int button);
+  void mouseEntered(int x, int y);
+  void mouseExited(int x, int y);
+  void windowResized(int w, int h);
+  void dragEvent(ofDragInfo dragInfo);
+  void gotMessage(ofMessage msg);
 		
 private:
 #ifdef USE_CAMERA
@@ -40,7 +38,11 @@ private:
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
   ofxCvGrayscaleImage frameDiff;
-  ofFbo fbo;
+  ofFbo savedFbo;
+  ofFbo activeFbo;
   ofEventListener backgroundColorChangeListener;
   bool paused;
+  ofFbo makeComposite();
+  void drawComposite(int w, int h);
+  int show;
 };
