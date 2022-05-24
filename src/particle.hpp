@@ -11,6 +11,7 @@ class Particle {
 public:
   static void makeParticle(float x, float y, ofColor videoColor, ofColor paletteColor);
   static void drawParticles();
+  static void eraseDeadParticles();
   static void updateParticles();
   static size_t particleCount();
   static void disruptParticles(ParticleDisruption disruption, float amount, float variation);
@@ -27,6 +28,7 @@ private:
   static std::vector<Particle> particles;
   static std::vector<ofVec2f> points;
   static unique_ptr<ofx::KDTree<ofVec2f>> spatialIndexPtr;
+  static void createSpatialIndex();
   ofVec2f position;
   ofVec2f velocity;
   ofVec2f acceleration;

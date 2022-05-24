@@ -12,30 +12,27 @@ void Particle::makeParticle(float x, float y, ofColor videoColor, ofColor palett
 }
 
 void Particle::drawParticles() {
-  for (auto& particle : particles) {
-    particle.draw();
-  }
+  std::for_each(particles.begin(), particles.end(), [](Particle& p){ p.draw(); });
 }
 
-void Particle::updateParticles() {
-  for (auto& particle : particles) {
-    particle.update();
-  }
-  
-  if (ofGetFrameNum() % 15 != 0) return;
-  
-  // remove dead particles
+void Particle::eraseDeadParticles() {
   auto it = std::remove_if(particles.begin(), particles.end(), [](Particle& p) { return p.isDead(); });
   auto r = std::distance(it, particles.end());
   particles.erase(it, particles.end());
-  
-  // rebuild spatial index
-  if (ofGetFrameRate() > 15) {
-    points.clear();
-    points.reserve(particles.size());
-    std::transform(particles.begin(), particles.end(), std::back_inserter(points), [](Particle& p) -> ofVec2f { return p.position; });
-    Particle::spatialIndexPtr = make_unique<ofx::KDTree<ofVec2f>>(points);
-  }
+}
+
+void Particle::createSpatialIndex() {
+  points.clear();
+  points.reserve(particles.size());
+  std::transform(particles.begin(), particles.end(), std::back_inserter(points), [](Particle& p) -> ofVec2f { return p.position; });
+  Particle::spatialIndexPtr = make_unique<ofx::KDTree<ofVec2f>>(points);
+}
+
+void Particle::updateParticles() {
+  std::for_each(particles.begin(), particles.end(), [](Particle& p){ p.update(); });
+  if (ofGetFrameNum() % 15 != 0) return;
+  eraseDeadParticles();
+  if (ofGetFrameRate() > 15) createSpatialIndex();
 }
 
 size_t Particle::particleCount() {
@@ -88,13 +85,15 @@ paletteColor(paletteColor_)
   acceleration.rotate(ofRandom(360.0));
 }
 
+// ******** TODO: ATTRACT/REPEL FROM MOUSE
 void Particle::update() {
-  ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
+  ofx::KDTree<ofVec2f>::SearchResults searchResults(20);
   spatialIndexPtr->findPointsWithinRadius(position, radius, searchResults);
   
   int count = 0;
   ofVec2f centroid;
   for (const auto& searchResult: searchResults) {
+    // ******** BUG: INDEXES CHANGE
     const Particle& otherParticle = particles[searchResult.first];
     if (position == otherParticle.position) continue;
     centroid += otherParticle.position;
@@ -105,6 +104,7 @@ void Particle::update() {
     centroid /= count;
     float distance = (centroid-position).length();
     float scale = (radius-distance)/radius;
+    // ******** TODO: LOOK AT CALCULATIONS UING FORCE
     acceleration = (acceleration + (position-centroid)*scale*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleAcceleration;
   }
   
@@ -121,14 +121,14 @@ bool Particle::isDead() const {
 
 // alpha 0.0-1.0
 void setMarkColor(ofColor c, float alpha) {
-  c.a = 255.0*alpha*Gui::getInstance().intensity;
+  c.a = 255.0 * alpha * Gui::getInstance().intensity;
   ofSetColor(c);
 }
 
 void Particle::draw() const {
   ofPushView();
 
-  ofx::KDTree<ofVec2f>::SearchResults searchResults(50);
+  ofx::KDTree<ofVec2f>::SearchResults searchResults(20);
   const float searchRadius = float(radius);
   spatialIndexPtr->findPointsWithinRadius(position, searchRadius, searchResults);
 
