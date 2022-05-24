@@ -15,12 +15,14 @@ void Particle::drawParticles() {
   std::for_each(particles.begin(), particles.end(), [](Particle& p){ p.draw(); });
 }
 
+// Run this with createSpatialIndex to ensure indices are kept in sync between `particles` and the index
 void Particle::eraseDeadParticles() {
   auto it = std::remove_if(particles.begin(), particles.end(), [](Particle& p) { return p.isDead(); });
   auto r = std::distance(it, particles.end());
   particles.erase(it, particles.end());
 }
 
+// Run this with createSpatialIndex to ensure indices are kept in sync between `particles` and the index
 void Particle::createSpatialIndex() {
   points.clear();
   points.reserve(particles.size());
@@ -30,9 +32,11 @@ void Particle::createSpatialIndex() {
 
 void Particle::updateParticles() {
   std::for_each(particles.begin(), particles.end(), [](Particle& p){ p.update(); });
-  if (ofGetFrameNum() % 15 != 0) return;
-  eraseDeadParticles();
-  if (ofGetFrameRate() > 15) createSpatialIndex();
+  if (ofGetFrameNum() % 20 != 0) return;
+  if (ofGetFrameRate() > 15) {
+    eraseDeadParticles();
+    createSpatialIndex();
+  }
 }
 
 size_t Particle::particleCount() {
@@ -69,6 +73,7 @@ void Particle::reduce(float amount, float variation) {
   auto it = std::remove_if(particles.begin(), particles.end(), [=](Particle& p) { return ofRandomf() < probability; });
   auto r = std::distance(it, particles.end());
   particles.erase(it, particles.end());
+  createSpatialIndex();
 }
 
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
@@ -87,6 +92,8 @@ paletteColor(paletteColor_)
 
 // ******** TODO: ATTRACT/REPEL FROM MOUSE
 void Particle::update() {
+  if (isDead()) return;
+  
   ofx::KDTree<ofVec2f>::SearchResults searchResults(20);
   spatialIndexPtr->findPointsWithinRadius(position, radius, searchResults);
   
@@ -126,6 +133,8 @@ void setMarkColor(ofColor c, float alpha) {
 }
 
 void Particle::draw() const {
+  if (isDead()) return;
+  
   ofPushView();
 
   ofx::KDTree<ofVec2f>::SearchResults searchResults(20);
