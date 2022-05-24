@@ -44,27 +44,27 @@ size_t Particle::particleCount() {
 }
 
 // amount is 0.0-1.0
-void Particle::disruptParticles(ParticleDisruption disruption, float amount, float variation) {
-  for (auto& particle : particles) {
-    particle.disrupt(disruption, amount, variation);
-  }
+void Particle::disruptParticles(float amount, float variation) {
+  std::for_each(particles.begin(), particles.end(), [=](Particle& p){ p.disrupt(amount, variation); });
 }
 
 float createRandomizedAmount(float amount, float variation) {
-  return (amount+ofRandom(variation)) - (amount+variation)/2.0;
+  float a = amount+ofRandom(variation) - (amount+variation)/2.0;
+  return std::max(0.0f, a);
 }
 
 void Particle::add(float amount, float variation) {
-  float num = createRandomizedAmount(amount, variation) * particles.size();
+  float num = createRandomizedAmount(amount, variation) * (float)particles.size();
   std::set<size_t> chosenIndexes;
   for (int i=0; i<num || chosenIndexes.size()==particles.size(); ++i) {
-    chosenIndexes.insert(ofRandom(chosenIndexes.size()));
+    chosenIndexes.insert(ofRandom(particles.size()));
   }
   for (const auto& i: chosenIndexes) {
     Particle p = particles[i];
     p.disrupt(Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
     particles.push_back(p);
   }
+  createSpatialIndex();
 }
 
 void Particle::reduce(float amount, float variation) {
@@ -193,39 +193,12 @@ void Particle::draw() const {
   ofPopView();
 }
 
-void Particle::disrupt(float amount, float variation) {
-  disrupt(ParticleDisruption::angle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  disrupt(ParticleDisruption::speed, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  disrupt(ParticleDisruption::accelerationAngle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  disrupt(ParticleDisruption::spin, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  disrupt(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-}
-
 // amount is 0.0-1.0
-void Particle::disrupt(ParticleDisruption disruption, float amount, float variation) {
+void Particle::disrupt(float amount, float variation) {
   float randomizedAmount = createRandomizedAmount(amount, variation);
-  switch(disruption) {
-    case ParticleDisruption::angle: {
-      velocity.rotate(randomizedAmount*360.0);
-      break;
-    }
-    case ParticleDisruption::speed: {
-      velocity *= randomizedAmount * 5.0;
-      break;
-    }
-    case ParticleDisruption::accelerationAngle: {
-      acceleration.rotate(randomizedAmount*360.0);
-      break;
-    }
-    case ParticleDisruption::spin: {
-      spin *= amount;
-      break;
-    }
-    case ParticleDisruption::radius: {
-      radius *= amount;
-      break;
-    }
-    default:
-      break;
-  }
+  velocity.rotate(randomizedAmount*360.0);
+  velocity *= randomizedAmount * 5.0;
+  acceleration.rotate(randomizedAmount*360.0);
+  spin *= amount;
+  radius *= amount;
 }

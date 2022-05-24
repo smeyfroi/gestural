@@ -14,7 +14,7 @@ public:
   static void eraseDeadParticles();
   static void updateParticles();
   static size_t particleCount();
-  static void disruptParticles(ParticleDisruption disruption, float amount, float variation);
+  static void disruptParticles(float amount, float variation);
   static void add(float amount, float variation);
   static void reduce(float amount, float variation);
   Particle(float x, float y, ofColor videoColor, ofColor paletteColor);
@@ -22,7 +22,6 @@ public:
   bool isDead() const;
   void draw() const;
   void disrupt(float amount, float variation);
-  void disrupt(ParticleDisruption disruption, float amount, float variation);
 
 private:
   static std::vector<Particle> particles;

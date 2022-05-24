@@ -18,9 +18,7 @@ ofFbo createFbo() {
 
 void ofApp::setup(){
   ofSetFrameRate(30);
-  
   ofSeedRandom();
-  
   paused = false;
   
 #ifdef USE_CAMERA
@@ -54,11 +52,7 @@ void ofApp::videoFilePathChanged(string& path) {
 }
 
 void ofApp::disruptedCurrent() {
-  Particle::disruptParticles(ParticleDisruption::angle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  Particle::disruptParticles(ParticleDisruption::speed, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  Particle::disruptParticles(ParticleDisruption::accelerationAngle, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  Particle::disruptParticles(ParticleDisruption::spin, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
-  Particle::disruptParticles(ParticleDisruption::radius, Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
+  Particle::disruptParticles(Gui::getInstance().disruptionAmount, Gui::getInstance().disruptionVariation);
 }
 
 void ofApp::disruptedAdd() {
@@ -211,7 +205,7 @@ void ofApp::keyPressed(int key){
     savedFbo.begin();
     ofSetColor(ofColor::white);
     ofEnableAlphaBlending();
-    ofBlendMode(OF_BLENDMODE_ALPHA);
+    ofBlendMode(OF_BLENDMODE_MULTIPLY);
     activeFbo.draw(0, 0);
     ofDisableAlphaBlending();
     savedFbo.end();
