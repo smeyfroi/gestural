@@ -14,7 +14,6 @@ namespace Constants {
 enum class ParticleDisruption {
   angle,
   speed,
-  accelerationAngle,
   spin,
   radius,
 };

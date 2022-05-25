@@ -44,9 +44,9 @@ public:
   ofxToggle drawConnections;
   
   ofxGuiGroup particleGroup;
+  ofParameter<float> mouseAttraction;
   ofxIntSlider particleMaxAge;
   ofxFloatSlider particleVelocity;
-  ofxFloatSlider particleAcceleration;
   ofxFloatSlider particleSpin;
   ofxIntSlider particleInfluence;
   ofxFloatSlider particleRepulsion;

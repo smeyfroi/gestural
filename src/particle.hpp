@@ -28,9 +28,9 @@ private:
   static std::vector<ofVec2f> points;
   static unique_ptr<ofx::KDTree<ofVec2f>> spatialIndexPtr;
   static void createSpatialIndex();
+  const ofVec2f createForce(ofVec2f target, float attraction, float influence);
   ofVec2f position;
   ofVec2f velocity;
-  ofVec2f acceleration;
   float spin;
   float radius;
   int age;

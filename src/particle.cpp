@@ -79,7 +79,6 @@ void Particle::reduce(float amount, float variation) {
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
 position(x, y),
 velocity(Gui::getInstance().particleVelocity, 0.0),
-acceleration(Gui::getInstance().particleAcceleration, 0.0),
 spin(Gui::getInstance().particleSpin),
 radius(Gui::getInstance().particleInfluence),
 age(0),
@@ -87,10 +86,19 @@ videoColor(videoColor_),
 paletteColor(paletteColor_)
 {
   velocity.rotate(ofRandom(360.0));
-  acceleration.rotate(ofRandom(360.0));
 }
 
-// ******** TODO: ATTRACT/REPEL FROM MOUSE
+float step(float edge, float t) {
+  return (float) (t >= edge);
+}
+
+const ofVec2f Particle::createForce(ofVec2f target, float attraction, float influence) {
+  ofVec2f direction = target - position;
+  float distance = direction.length();
+  float forceMagnitude = attraction * (1.0 - distance/influence);
+  return step(distance, influence) * forceMagnitude * direction.getNormalized();
+}
+
 void Particle::update() {
   if (isDead()) return;
   
@@ -100,24 +108,17 @@ void Particle::update() {
   int count = 0;
   ofVec2f centroid;
   for (const auto& searchResult: searchResults) {
-    // ******** BUG: INDEXES CHANGE
     const Particle& otherParticle = particles[searchResult.first];
     if (position == otherParticle.position) continue;
     centroid += otherParticle.position;
     ++count;
   }
+  if (count != 0) velocity += createForce(centroid/count, Gui::getInstance().particleRepulsion, radius);
   
-  if (count != 0 && radius > 1.0) {
-    centroid /= count;
-    float distance = (centroid-position).length();
-    float scale = (radius-distance)/radius;
-    // ******** TODO: LOOK AT CALCULATIONS UING FORCE
-    acceleration = (acceleration + (position-centroid)*scale*Gui::getInstance().particleRepulsion).normalize() * Gui::getInstance().particleAcceleration;
-  }
+  float scale = float(Constants::canvasWidth/ofGetWindowWidth());
+  velocity += createForce(ofVec2f(ofGetMouseX()*scale, ofGetMouseY()*scale), Gui::getInstance().mouseAttraction, radius);
   
   velocity.rotate(spin);
-  acceleration.rotate(spin);
-  velocity += acceleration;
   position += velocity;
   age++;
 }
@@ -198,7 +199,6 @@ void Particle::disrupt(float amount, float variation) {
   float randomizedAmount = createRandomizedAmount(amount, variation);
   velocity.rotate(randomizedAmount*360.0);
   velocity *= randomizedAmount * 5.0;
-  acceleration.rotate(randomizedAmount*360.0);
   spin *= amount;
   radius *= amount;
 }

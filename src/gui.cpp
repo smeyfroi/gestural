@@ -30,13 +30,13 @@ Gui::Gui() {
   panel.add(&markTypesGroup);
   
   particleGroup.setup("Marks");
+  particleGroup.add(mouseAttraction.set("Mouse attraction", 3.0, -5.0, 5.0));
   particleGroup.add(particleMaxAge.setup("Lifespan", 400, 50, 4000));
   particleGroup.add(particleVelocity.setup("Speed", 1.0, 0, 10));
-  particleGroup.add(particleAcceleration.setup("Acceleration", 0.10, 0, 1));
   particleGroup.add(particleSpin.setup("Spin", 0.0, -5.0, 5.0));
   particleGroup.add(lineWidth.setup("Line width", 6, 1, 20));
-  particleGroup.add(particleInfluence.setup("Influence", 200, 0, 1000));
-  particleGroup.add(particleRepulsion.setup("Repulsion", 1.0, 0, 10.0));
+  particleGroup.add(particleInfluence.setup("Influence", 400, 0, 1000));
+  particleGroup.add(particleRepulsion.setup("Attraction", -0.2, -5.0, 5.0));
   panel.add(&particleGroup);
   
   colorGroup.setup("Colours");
