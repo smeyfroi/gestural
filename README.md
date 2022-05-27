@@ -5,6 +5,8 @@ An exploration of what it means to share generative art systems with peers.
 
 ![Gestural-5432 1600](https://user-images.githubusercontent.com/203996/165378082-a06ee8f1-7e30-445c-9efc-8f80f75f4eb8.jpg)
 
+![snapshot-2022-05-04-09-33-28-490](https://user-images.githubusercontent.com/203996/170792920-089fe506-c7e3-42db-8dd2-86c9874af283.jpg)
+
 ![snapshot-2022-05-03-21-35-52-998 1600](https://user-images.githubusercontent.com/203996/166562397-5b6c4627-c9ec-496a-b9a8-f2e1a2490b82.jpg)
 
 ![snapshot-2022-05-27-16-59-18-024 copy](https://user-images.githubusercontent.com/203996/170786063-19127061-f2e8-47e0-b3fa-a704d35e3852.jpg)
