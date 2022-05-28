@@ -6,6 +6,9 @@
 #include "gui.hpp"
 #include "palette.hpp"
 
+float Globals::screenToCanvasWidthScale = 1.0;
+float Globals::screenToCanvasHeightScale = 1.0;
+
 //--------------------------------------------------------------
 ofFbo createFbo() {
   ofFbo fbo;
@@ -17,6 +20,9 @@ ofFbo createFbo() {
 }
 
 void ofApp::setup(){
+  Globals::screenToCanvasWidthScale = float(ofGetScreenWidth()) / Constants::canvasWidth;
+  Globals::screenToCanvasHeightScale = float(ofGetScreenHeight()) / Constants::canvasHeight;
+
   ofSetFrameRate(30);
   ofSeedRandom();
   paused = false;
@@ -135,7 +141,7 @@ void ofApp::update(){
 void drawGhostImage(const ofxCvImage& image) {
   if (image.bAllocated) {
     ofEnableAlphaBlending();
-    ofSetColor(255, 255, 255, 64);
+    ofSetColor(255, 255, 255, 16);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
     ofDisableAlphaBlending();
   }
@@ -203,9 +209,9 @@ void ofApp::keyPressed(int key){
 #endif
   } else if (key == '.') {
     savedFbo.begin();
-    ofSetColor(ofColor::white);
+    ofSetColor(255, 255, 255, 255);
     ofEnableAlphaBlending();
-    ofBlendMode(OF_BLENDMODE_MULTIPLY);
+    ofBlendMode(OF_BLENDMODE_SCREEN); // not sure why the saved stuff loses alpha
     activeFbo.draw(0, 0);
     ofDisableAlphaBlending();
     savedFbo.end();

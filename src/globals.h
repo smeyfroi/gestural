@@ -17,3 +17,9 @@ enum class ParticleDisruption {
   spin,
   radius,
 };
+
+// allocated in ofApp.cpp
+namespace Globals {
+  extern float screenToCanvasHeightScale;
+  extern float screenToCanvasWidthScale;
+};

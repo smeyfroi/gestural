@@ -20,7 +20,7 @@ public:
   Particle(float x, float y, ofColor videoColor, ofColor paletteColor);
   void update();
   bool isDead() const;
-  void draw() const;
+  void draw();
   void disrupt(float amount, float variation);
 
 private:
@@ -29,6 +29,13 @@ private:
   static unique_ptr<ofx::KDTree<ofVec2f>> spatialIndexPtr;
   static void createSpatialIndex();
   const ofVec2f createForce(ofVec2f target, float attraction, float influence);
+  int edgeDistanceH() const;
+  int edgeDistanceW() const;
+  float edgeProximityH() const;
+  float edgeProximityW() const;
+  int edgeDistanceV() const;
+  void setMarkColor(ofColor c, float alpha) const;
+  ofVec2f lastDrawnPosition;
   ofVec2f position;
   ofVec2f velocity;
   float spin;

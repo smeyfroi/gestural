@@ -18,7 +18,6 @@ void Particle::drawParticles() {
 // Run this with createSpatialIndex to ensure indices are kept in sync between `particles` and the index
 void Particle::eraseDeadParticles() {
   auto it = std::remove_if(particles.begin(), particles.end(), [](Particle& p) { return p.isDead(); });
-  auto r = std::distance(it, particles.end());
   particles.erase(it, particles.end());
 }
 
@@ -77,8 +76,9 @@ void Particle::reduce(float amount, float variation) {
 }
 
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
+lastDrawnPosition(x, y),
 position(x, y),
-velocity(Gui::getInstance().particleVelocity, 0.0),
+velocity(1.0, 0.0),
 spin(Gui::getInstance().particleSpin),
 radius(Gui::getInstance().particleInfluence),
 age(0),
@@ -115,10 +115,12 @@ void Particle::update() {
   }
   if (count != 0) velocity += createForce(centroid/count, Gui::getInstance().particleRepulsion, radius);
   
-  float scale = float(Constants::canvasWidth/ofGetWindowWidth());
-  velocity += createForce(ofVec2f(ofGetMouseX()*scale, ofGetMouseY()*scale), Gui::getInstance().mouseAttraction, radius);
+  if (!ofGetKeyPressed(OF_KEY_SHIFT)) {
+    velocity += createForce(ofVec2f(ofGetMouseX()/Globals::screenToCanvasWidthScale, ofGetMouseY()/Globals::screenToCanvasHeightScale), Gui::getInstance().mouseAttraction, ofGetWindowWidth()/3);
+  }
   
   velocity.rotate(spin);
+  velocity *= Gui::getInstance().particleDamping;
   position += velocity;
   age++;
 }
@@ -127,16 +129,44 @@ bool Particle::isDead() const {
   return (age > Gui::getInstance().particleMaxAge || position.x+radius < 0 || position.y+radius < 0 || position.x-radius > Constants::canvasWidth || position.y-radius > Constants::canvasHeight);
 }
 
+int Particle::edgeDistanceW() const {
+  return std::min(std::abs(position.x), std::abs(Constants::canvasWidth-position.x));
+}
+
+int Particle::edgeDistanceH() const {
+  return std::min(std::abs(position.y), std::abs(Constants::canvasHeight-position.y));
+}
+
+// 0 at edge, 1 not at edge
+float Particle::edgeProximityW() const {
+  int edgeMargin = float(Gui::getInstance().edgeWidth)*Constants::canvasWidth/2.0;
+  return std::min((float)1.0, float(edgeDistanceW())/edgeMargin);
+}
+
+// 0 at edge, 1 not at edge
+float Particle::edgeProximityH() const {
+  int edgeMargin = float(Gui::getInstance().edgeWidth)*Constants::canvasHeight/2.0;
+  return std::min((float)1.0, float(edgeDistanceH())/edgeMargin);
+}
+
 // alpha 0.0-1.0
-void setMarkColor(ofColor c, float alpha) {
+void Particle::setMarkColor(ofColor c, float alpha) const {
+  alpha = std::max(alpha*edgeProximityH()*edgeProximityW() + ofRandom(-0.1, 0.1), (float)Gui::getInstance().intensityAtEdges);
+  
+  if (Gui::getInstance().fadeWithAge) {
+    float maxAge = Gui::getInstance().particleMaxAge;
+    alpha *= (maxAge - age) / maxAge;
+  }
   c.a = 255.0 * alpha * Gui::getInstance().intensity;
   ofSetColor(c);
 }
 
-void Particle::draw() const {
+void Particle::draw() {
   if (isDead()) return;
   
   ofPushView();
+  ofEnableAlphaBlending();
+  ofBlendMode(OF_BLENDMODE_MULTIPLY);
 
   ofx::KDTree<ofVec2f>::SearchResults searchResults(20);
   const float searchRadius = float(radius);
@@ -144,10 +174,6 @@ void Particle::draw() const {
 
   // find alpha except when drawConnection and fadeWithDistance (that's calculated per connection)
   float alpha = 1.0; // keep this 0.0-1.0 until it gets applied
-  if (Gui::getInstance().fadeWithAge) {
-    float maxAge = Gui::getInstance().particleMaxAge;
-    alpha *= (maxAge - age) / maxAge;
-  }
   if (Gui::getInstance().drawTrails && Gui::getInstance().fadeWithDistance) {
     // 0.2 to 1.0 for 0 to 4 particles in its radius
     std::size_t m = 4;
@@ -161,8 +187,13 @@ void Particle::draw() const {
     } else {
       setMarkColor(paletteColor, alpha);
     }
-    ofFill();
-    ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
+    if (Gui::getInstance().completeTrails) {
+      ofSetLineWidth(Gui::getInstance().lineWidth);
+      ofDrawLine(lastDrawnPosition, position);
+    } else {
+      ofFill();
+      ofDrawCircle(position.x, position.y, Gui::getInstance().lineWidth);
+    }
   }
   
   if (Gui::getInstance().drawConnections && searchRadius > 1.0) {
@@ -191,6 +222,7 @@ void Particle::draw() const {
     }
   }
  
+  lastDrawnPosition = position;
   ofPopView();
 }
 

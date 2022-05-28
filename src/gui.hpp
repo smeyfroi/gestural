@@ -31,7 +31,8 @@ public:
   ofxLabel spaceKey;
   ofxLabel dotKey;
   ofxLabel fKey;
-  
+  ofxLabel shiftKey;
+
   ofxGuiGroup videoGroup;
   ofParameter<void> loadVideoButton;
   std::string videoPath {""};
@@ -41,20 +42,23 @@ public:
   ofxGuiGroup markTypesGroup;
   ofxIntSlider maxAddedParticles;
   ofxToggle drawTrails;
+  ofParameter<bool> completeTrails;
   ofxToggle drawConnections;
-  
+  ofxIntSlider lineWidth;
+
   ofxGuiGroup particleGroup;
   ofParameter<float> mouseAttraction;
   ofxIntSlider particleMaxAge;
-  ofxFloatSlider particleVelocity;
+  ofxFloatSlider particleDamping;
   ofxFloatSlider particleSpin;
   ofxIntSlider particleInfluence;
   ofxFloatSlider particleRepulsion;
-  ofxIntSlider lineWidth;
   
   ofxGuiGroup colorGroup;
   ofParameter<ofColor> backgroundColor;
   ofxFloatSlider intensity;
+  ofParameter<float> intensityAtEdges;
+  ofParameter<float> edgeWidth;
   ofxToggle fadeWithAge;
   ofxToggle fadeWithDistance;
   ofxToggle colorFromVideo;
