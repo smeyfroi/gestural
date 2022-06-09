@@ -52,9 +52,11 @@ void ofApp::backgroundColorChanged(ofColor& c) {
 }
 
 void ofApp::videoFilePathChanged(string& path) {
+#ifndef USE_CAMERA
   video.load(path);
   video.setVolume(0);
   video.play();
+#endif
 }
 
 void ofApp::disruptedCurrent() {
