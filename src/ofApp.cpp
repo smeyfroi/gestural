@@ -25,6 +25,8 @@ void ofApp::setup(){
 
   ofSetFrameRate(30);
   ofSeedRandom();
+  ofEnableAlphaBlending();
+
   paused = false;
   
 #ifdef USE_CAMERA
@@ -142,42 +144,33 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void drawGhostImage(const ofxCvImage& image) {
   if (image.bAllocated) {
-    ofEnableAlphaBlending();
     ofSetColor(255, 255, 255, 16);
     image.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-    ofDisableAlphaBlending();
   }
 }
 
 void drawFbo(ofFbo& fbo) {
   ofClear(Gui::getInstance().backgroundColor);
-  ofSetColor(ofColor::white);
-  ofEnableAlphaBlending();
-  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+  ofSetColor(255, 255, 255, 255);
+//  ofBlendMode(OF_BLENDMODE_MULTIPLY);
   fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-  ofDisableAlphaBlending();
 }
 
 void ofApp::drawComposite(int w, int h) {
   ofClear(Gui::getInstance().backgroundColor);
-  ofSetColor(ofColor::white);
-  ofEnableAlphaBlending();
-  ofBlendMode(OF_BLENDMODE_MULTIPLY);
+  ofSetColor(255, 255, 255, 255);
+//  ofBlendMode(OF_BLENDMODE_ALPHA);
   savedFbo.draw(0, 0, w, h);
+//  ofBlendMode(OF_BLENDMODE_ALPHA);
   activeFbo.draw(0, 0, w, h);
-  ofDisableAlphaBlending();
 }
 
 void ofApp::draw(){
   if (show==1) drawFbo(activeFbo);
   else if (show==2) drawFbo(savedFbo);
-  else {
-    drawComposite(ofGetWindowWidth(), ofGetWindowHeight());
-  }
+  else drawComposite(ofGetWindowWidth(), ofGetWindowHeight());
   
-  if (Gui::getInstance().showVideo) {
-    drawGhostImage(simpleFrame1);
-  }
+  if (Gui::getInstance().showVideo) drawGhostImage(simpleFrame1);
   
   Gui::getInstance().performance =  "FPS: "+ofToString(int(ofGetFrameRate())) + " Marks: "+ofToString(Particle::particleCount());
   Gui::getInstance().draw();
@@ -212,10 +205,9 @@ void ofApp::keyPressed(int key){
   } else if (key == '.') {
     savedFbo.begin();
     ofSetColor(255, 255, 255, 255);
-    ofEnableAlphaBlending();
-    ofBlendMode(OF_BLENDMODE_SCREEN); // not sure why the saved stuff loses alpha
+//    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // should be this?
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
     activeFbo.draw(0, 0);
-    ofDisableAlphaBlending();
     savedFbo.end();
     activeFbo.begin();
     ofClear(255, 255, 255, 0);

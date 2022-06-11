@@ -78,7 +78,7 @@ void Particle::reduce(float amount, float variation) {
 Particle::Particle(float x, float y, ofColor videoColor_, ofColor paletteColor_) :
 lastDrawnPosition(x, y),
 position(x, y),
-velocity(1.0, 0.0),
+velocity(0.5, 0.0),
 spin(Gui::getInstance().particleSpin),
 radius(Gui::getInstance().particleInfluence),
 age(0),
