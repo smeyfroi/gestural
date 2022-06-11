@@ -213,13 +213,15 @@ void ofApp::keyPressed(int key){
     savedFbo.begin();
     ofSetColor(255, 255, 255, 255);
 //    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // should be this?
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+//    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // should be this?
+//    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     activeFbo.draw(0, 0);
     savedFbo.end();
     activeFbo.begin();
     ofClear(255, 255, 255, 0);
     activeFbo.end();
-    fadeSaved();
+//    fadeSaved();
   } else if (key == 'f') {
     fadeSaved();
   }
