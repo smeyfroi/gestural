@@ -37,10 +37,6 @@ void ofApp::setup(){
   video.play();
 #endif
   
-  backgroundColorChangeListener = Gui::getInstance().backgroundColor.newListener(this, &ofApp::backgroundColorChanged);
-  ofColor c = Gui::getInstance().backgroundColor;
-  backgroundColorChanged(c);
-  
   ofAddListener(Gui::getInstance().videoPathChanged, this, &ofApp::videoFilePathChanged);
   Gui::getInstance().disruptCurrent.addListener(this, &ofApp::disruptedCurrent);
   Gui::getInstance().disruptAdd.addListener(this, &ofApp::disruptedAdd);
@@ -48,9 +44,6 @@ void ofApp::setup(){
   
   activeFbo = createFbo();
   savedFbo = createFbo();
-}
-
-void ofApp::backgroundColorChanged(ofColor& c) {
 }
 
 void ofApp::videoFilePathChanged(string& path) {
@@ -186,6 +179,16 @@ ofFbo ofApp::makeComposite() {
   return compositeFbo;
 }
 
+const int FADE_ALPHA = 254;
+void ofApp::fadeSaved() {
+  ofFbo fadedFbo = createFbo();
+  fadedFbo.begin();
+  ofSetColor(255, 255, 255, FADE_ALPHA);
+  savedFbo.draw(0, 0);
+  fadedFbo.end();
+  savedFbo = fadedFbo;
+}
+
 void ofApp::keyPressed(int key){
   if (key == 's') {
     ofPixels pixels;
@@ -200,9 +203,13 @@ void ofApp::keyPressed(int key){
   } else if (key == ' ') {
     paused = !paused;
 #ifndef USE_CAMERA
+    videoPaused = paused;
     video.setPaused(paused);
+  } else if (key == 9) {
+    videoPaused = !videoPaused;
+    video.setPaused(videoPaused);
 #endif
-  } else if (key == '.') {
+  } else if (key == '.' && !paused) {
     savedFbo.begin();
     ofSetColor(255, 255, 255, 255);
 //    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // should be this?
@@ -212,13 +219,9 @@ void ofApp::keyPressed(int key){
     activeFbo.begin();
     ofClear(255, 255, 255, 0);
     activeFbo.end();
+    fadeSaved();
   } else if (key == 'f') {
-    ofFbo fadedFbo = createFbo();
-    fadedFbo.begin();
-    ofSetColor(255, 255, 255, 255-Gui::getInstance().fadeAmount);
-    savedFbo.draw(0, 0);
-    fadedFbo.end();
-    savedFbo = fadedFbo;
+    fadeSaved();
   }
   // debug
   if(key=='1') show=1;

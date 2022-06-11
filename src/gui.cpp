@@ -13,8 +13,11 @@ Gui::Gui() {
   keysGroup.add(rsqbrKey.setup("[", "Save control settings"));
   keysGroup.add(lsqbrKey.setup("]", "Load control settings"));
   keysGroup.add(spaceKey.setup("space", "Pause drawing"));
-  keysGroup.add(dotKey.setup(".", "Add permanent"));
-  keysGroup.add(fKey.setup("f", "Fade permanent"));
+#ifndef USE_CAMERA
+  keysGroup.add(tabKey.setup("tab", "Pause video"));
+#endif
+  keysGroup.add(dotKey.setup(".", "Add background"));
+  keysGroup.add(fKey.setup("f", "Fade background"));
   keysGroup.add(shiftKey.setup("shift", "Don't react to mouse"));
   panel.add(&keysGroup);
 
@@ -65,8 +68,6 @@ Gui::Gui() {
   disruptionGroup.add(disruptAdd.set("Add"));
   disruptionGroup.add(disruptReduce.set("Reduce"));
   panel.add(&disruptionGroup);
-
-  panel.add(fadeAmount.setup("Fade amount", 32, 4, 128));
 }
 
 void Gui::loadVideo() {

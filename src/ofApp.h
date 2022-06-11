@@ -9,7 +9,6 @@ class ofApp : public ofBaseApp{
 
 public:
   void setup();
-  void backgroundColorChanged(ofColor&);
   void videoFilePathChanged(std::string&);
   void update();
   void draw();
@@ -34,6 +33,7 @@ private:
   ofVideoGrabber video;
 #else
   ofVideoPlayer video;
+  bool videoPaused;
 #endif
   ofxCvColorImage frame1, frame2;
   ofxCvGrayscaleImage simpleFrame1, simpleFrame2;
@@ -45,4 +45,5 @@ private:
   ofFbo makeComposite();
   void drawComposite(int w, int h);
   int show;
+  void fadeSaved();
 };

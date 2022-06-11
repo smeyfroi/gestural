@@ -29,6 +29,7 @@ public:
   ofxLabel rsqbrKey;
   ofxLabel lsqbrKey;
   ofxLabel spaceKey;
+  ofxLabel tabKey;
   ofxLabel dotKey;
   ofxLabel fKey;
   ofxLabel shiftKey;
@@ -62,6 +63,11 @@ public:
   ofxToggle fadeWithAge;
   ofxToggle fadeWithDistance;
   ofxToggle colorFromVideo;
+  
+  
+  ////////////////////////////////////// PASTE DOESN'T WORK
+  
+  
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
   ofxToggle mixColorFromPalette2;
@@ -75,8 +81,6 @@ public:
   ofParameter<void> disruptCurrent;
   ofParameter<void> disruptAdd;
   ofParameter<void> disruptReduce;
-  
-  ofxIntSlider fadeAmount;
   
 private:
   bool show = true;
