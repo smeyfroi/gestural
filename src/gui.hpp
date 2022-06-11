@@ -64,10 +64,6 @@ public:
   ofxToggle fadeWithDistance;
   ofxToggle colorFromVideo;
   
-  
-  ////////////////////////////////////// PASTE DOESN'T WORK
-  
-  
   ofxInputField<std::string> palette1Url;
   Palette palette1 {""};
   ofxToggle mixColorFromPalette2;
