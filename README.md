@@ -13,13 +13,27 @@ An exploration of what it means to share generative art systems with peers.
 
 ![snapshot-2022-05-27-16-30-56-237](https://user-images.githubusercontent.com/203996/170786093-d469a74c-3e09-4d9b-98d0-dcae58f1b18c.jpg)
 
-## Controls
+## User notes
 
-* 's' save a high-resolution image to Documents/gestural/ (might take a while: large image file)
-* 'g' switch on/off the control palette
-* '[' save the settings in the control palette
-* ']' load saved settings into the control palette
-* ' ' pause the drawing, allowing you to tweak controls etc
-* '.' push the current drawing onto the 'permanent' layer and clear the 'active' layer
-* 'f' fade the 'permanent' layer
+Give it permission to run via the MacOS "Security" preference pane since it hasn't come from a trusted App Store.
 
+There are two versions to choose from:
+* `gestural-file`: click the box next to "Load video file" to use a `.mov` or `.mp4` file as the subject (else it shows a white screen and does nothing).
+* `gestural-live`: give it permission to access your camera so it can use the live feed as subject
+
+To use a custom palette, uncheck `Use video colours` and paste the URL for a palette from https://coolors.co/ into the `coolors.co URL` field.
+
+Keys:
+* `s` - save an image in the `gestural` folder in your home folder
+* `g` - toggle the controls panel on/off
+* `[` - save the controls
+* `]` - load the saved controls
+* `<space bar>` - pause everything so you can adjust controls
+* `<tab key>` - pause video file but leave everything else running
+* `.` - save a ghost of the current drawing to background
+* `f` - fade the background
+* '<shift key>` - stop the drawing from reacting to your mouse pointer
+
+Note that saving an image will beachball the mac for a while: the files are large enough to make 36"x24" prints from. Watch out if you're tight on disk space: those images can be 100MB+. They end up in a folder called `gestural` in your home folder.
+  
+  ![IMG_6623 1600](https://user-images.githubusercontent.com/203996/173229309-8525198e-20ac-45ff-89dc-648e2e7acf03.jpg)
